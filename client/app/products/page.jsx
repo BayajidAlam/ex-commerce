@@ -1,26 +1,35 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Search, Filter, ShoppingCart } from "lucide-react"
-import { useCartStore } from "@/lib/store"
-import Header from "@/components/header"
-import { useSearchParams } from "next/navigation"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Search, Filter, ShoppingCart } from "lucide-react";
+import { useCartStore } from "@/lib/store";
+import Header from "@/components/header";
+import { useSearchParams } from "next/navigation";
+import { ProductCard } from "@/components/ProductCard";
 
 export default function ProductsPage() {
-  const searchParams = useSearchParams()
-  const { addItem } = useCartStore()
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("search") || "")
-  const [sortBy, setSortBy] = useState("name")
-  const [selectedCategories, setSelectedCategories] = useState([])
-  const [priceRange, setPriceRange] = useState([0, 5000])
-  const [filteredProducts, setFilteredProducts] = useState([])
+  const searchParams = useSearchParams();
+  const { addItem } = useCartStore();
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("search") || ""
+  );
+  const [sortBy, setSortBy] = useState("name");
+  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [priceRange, setPriceRange] = useState([0, 5000]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   const allProducts = [
     {
@@ -135,32 +144,38 @@ export default function ProductsPage() {
       category: "casual",
       image: "/placeholder.svg?height=300&width=250&text=Yellow+Casual",
     },
-  ]
+  ];
 
   const categories = [
     { id: "casual", label: "Casual Shirts" },
     { id: "formal", label: "Formal Shirts" },
     { id: "traditional", label: "Traditional Wear" },
-  ]
+  ];
 
   useEffect(() => {
-    let filtered = allProducts
+    let filtered = allProducts;
 
     // Filter by search query
     if (searchQuery) {
-      filtered = filtered.filter((product) => product.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      filtered = filtered.filter((product) =>
+        product.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
     }
 
     // Filter by categories
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter((product) => selectedCategories.includes(product.category))
+      filtered = filtered.filter((product) =>
+        selectedCategories.includes(product.category)
+      );
     }
 
     // Filter by price range
     filtered = filtered.filter((product) => {
-      const price = Number.parseFloat(product.price.replace("৳", "").replace(",", ""))
-      return price >= priceRange[0] && price <= priceRange[1]
-    })
+      const price = Number.parseFloat(
+        product.price.replace("৳", "").replace(",", "")
+      );
+      return price >= priceRange[0] && price <= priceRange[1];
+    });
 
     // Sort products
     filtered.sort((a, b) => {
@@ -169,32 +184,34 @@ export default function ProductsPage() {
           return (
             Number.parseFloat(a.price.replace("৳", "").replace(",", "")) -
             Number.parseFloat(b.price.replace("৳", "").replace(",", ""))
-          )
+          );
         case "price-high":
           return (
             Number.parseFloat(b.price.replace("৳", "").replace(",", "")) -
             Number.parseFloat(a.price.replace("৳", "").replace(",", ""))
-          )
+          );
         case "name":
         default:
-          return a.name.localeCompare(b.name)
+          return a.name.localeCompare(b.name);
       }
-    })
+    });
 
-    setFilteredProducts(filtered)
-  }, [searchQuery, selectedCategories, priceRange, sortBy])
+    setFilteredProducts(filtered);
+  }, [searchQuery, selectedCategories, priceRange, sortBy]);
 
   const handleCategoryChange = (categoryId, checked) => {
     if (checked) {
-      setSelectedCategories([...selectedCategories, categoryId])
+      setSelectedCategories([...selectedCategories, categoryId]);
     } else {
-      setSelectedCategories(selectedCategories.filter((id) => id !== categoryId))
+      setSelectedCategories(
+        selectedCategories.filter((id) => id !== categoryId)
+      );
     }
-  }
+  };
 
   const handleAddToCart = (product) => {
-    addItem(product)
-  }
+    addItem(product);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -227,14 +244,21 @@ export default function ProductsPage() {
 
               {/* Categories */}
               <div className="mb-6">
-                <label className="text-sm font-medium mb-3 block">Categories</label>
+                <label className="text-sm font-medium mb-3 block">
+                  Categories
+                </label>
                 <div className="space-y-3">
                   {categories.map((category) => (
-                    <div key={category.id} className="flex items-center space-x-2">
+                    <div
+                      key={category.id}
+                      className="flex items-center space-x-2"
+                    >
                       <Checkbox
                         id={category.id}
                         checked={selectedCategories.includes(category.id)}
-                        onCheckedChange={(checked) => handleCategoryChange(category.id, checked)}
+                        onCheckedChange={(checked) =>
+                          handleCategoryChange(category.id, checked)
+                        }
                       />
                       <label htmlFor={category.id} className="text-sm">
                         {category.label}
@@ -246,14 +270,21 @@ export default function ProductsPage() {
 
               {/* Price Range */}
               <div className="mb-6">
-                <label className="text-sm font-medium mb-3 block">Price Range</label>
+                <label className="text-sm font-medium mb-3 block">
+                  Price Range
+                </label>
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <Input
                       type="number"
                       placeholder="Min"
                       value={priceRange[0]}
-                      onChange={(e) => setPriceRange([Number.parseInt(e.target.value) || 0, priceRange[1]])}
+                      onChange={(e) =>
+                        setPriceRange([
+                          Number.parseInt(e.target.value) || 0,
+                          priceRange[1],
+                        ])
+                      }
                       className="w-20"
                     />
                     <span>-</span>
@@ -261,7 +292,12 @@ export default function ProductsPage() {
                       type="number"
                       placeholder="Max"
                       value={priceRange[1]}
-                      onChange={(e) => setPriceRange([priceRange[0], Number.parseInt(e.target.value) || 5000])}
+                      onChange={(e) =>
+                        setPriceRange([
+                          priceRange[0],
+                          Number.parseInt(e.target.value) || 5000,
+                        ])
+                      }
                       className="w-20"
                     />
                   </div>
@@ -273,7 +309,9 @@ export default function ProductsPage() {
           {/* Products Grid */}
           <div className="lg:w-3/4">
             <div className="flex justify-between items-center mb-6">
-              <h1 className="text-2xl font-bold">Products ({filteredProducts.length})</h1>
+              <h1 className="text-2xl font-bold">
+                Products ({filteredProducts.length})
+              </h1>
               <Select value={sortBy} onValueChange={setSortBy}>
                 <SelectTrigger className="w-48">
                   <SelectValue placeholder="Sort by" />
@@ -288,45 +326,26 @@ export default function ProductsPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product) => (
-                <Card key={product.id} className="group cursor-pointer hover:shadow-lg transition-shadow">
-                  <CardContent className="p-0">
-                    <div className="relative aspect-[3/4] overflow-hidden rounded-t-lg">
-                      <Image
-                        src={product.image || "/placeholder.svg"}
-                        alt={product.name}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-                        <Button
-                          onClick={() => handleAddToCart(product)}
-                          className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                        >
-                          <ShoppingCart className="mr-2 h-4 w-4" />
-                          Add to Cart
-                        </Button>
-                      </div>
-                    </div>
-                    <div className="p-4">
-                      <h3 className="font-medium text-sm mb-2 line-clamp-2">{product.name}</h3>
-                      <p className="text-lg font-bold text-primary">{product.price}</p>
-                      <Badge variant="secondary" className="mt-2 capitalize">
-                        {product.category}
-                      </Badge>
-                    </div>
-                  </CardContent>
-                </Card>
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  showCategory={true}
+                  showAddToCart={true}
+                  onAddToCart={handleAddToCart}
+                />
               ))}
             </div>
 
             {filteredProducts.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No products found matching your criteria.</p>
+                <p className="text-gray-500 text-lg">
+                  No products found matching your criteria.
+                </p>
               </div>
             )}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

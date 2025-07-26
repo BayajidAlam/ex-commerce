@@ -1,7 +1,8 @@
-import Image from "next/image"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import Header from "@/components/header"
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import Header from "@/components/header";
+import { ProductCard } from "@/components/ProductCard";
 
 export default function HomePage() {
   const products = [
@@ -29,16 +30,31 @@ export default function HomePage() {
       price: "৳1,400",
       image: "/placeholder.svg?height=300&width=250&text=Striped+Shirt",
     },
-    { id: 5, name: "Black Kurta", price: "৳2,200", image: "/placeholder.svg?height=300&width=250&text=Black+Kurta" },
+    {
+      id: 5,
+      name: "Black Kurta",
+      price: "৳2,200",
+      image: "/placeholder.svg?height=300&width=250&text=Black+Kurta",
+    },
     {
       id: 6,
       name: "White Panjabi",
       price: "৳2,500",
       image: "/placeholder.svg?height=300&width=250&text=White+Panjabi",
     },
-    { id: 7, name: "Navy Kurta", price: "৳2,000", image: "/placeholder.svg?height=300&width=250&text=Navy+Kurta" },
-    { id: 8, name: "Maroon Kurta", price: "৳2,300", image: "/placeholder.svg?height=300&width=250&text=Maroon+Kurta" },
-  ]
+    {
+      id: 7,
+      name: "Navy Kurta",
+      price: "৳2,000",
+      image: "/placeholder.svg?height=300&width=250&text=Navy+Kurta",
+    },
+    {
+      id: 8,
+      name: "Maroon Kurta",
+      price: "৳2,300",
+      image: "/placeholder.svg?height=300&width=250&text=Maroon+Kurta",
+    },
+  ];
 
   const seasonalProducts = [
     {
@@ -59,22 +75,37 @@ export default function HomePage() {
       price: "৳1,900",
       image: "/placeholder.svg?height=300&width=250&text=Striped+Formal",
     },
-    { id: 12, name: "Beige Casual", price: "৳1,500", image: "/placeholder.svg?height=300&width=250&text=Beige+Casual" },
+    {
+      id: 12,
+      name: "Beige Casual",
+      price: "৳1,500",
+      image: "/placeholder.svg?height=300&width=250&text=Beige+Casual",
+    },
     {
       id: 13,
       name: "Check Pattern",
       price: "৳1,800",
       image: "/placeholder.svg?height=300&width=250&text=Check+Pattern",
     },
-    { id: 14, name: "Cream Formal", price: "৳2,000", image: "/placeholder.svg?height=300&width=250&text=Cream+Formal" },
-    { id: 15, name: "Black Casual", price: "৳1,400", image: "/placeholder.svg?height=300&width=250&text=Black+Casual" },
+    {
+      id: 14,
+      name: "Cream Formal",
+      price: "৳2,000",
+      image: "/placeholder.svg?height=300&width=250&text=Cream+Formal",
+    },
+    {
+      id: 15,
+      name: "Black Casual",
+      price: "৳1,400",
+      image: "/placeholder.svg?height=300&width=250&text=Black+Casual",
+    },
     {
       id: 16,
       name: "Yellow Casual",
       price: "৳1,300",
       image: "/placeholder.svg?height=300&width=250&text=Yellow+Casual",
     },
-  ]
+  ];
 
   const bottomProducts = [
     {
@@ -83,15 +114,25 @@ export default function HomePage() {
       price: "৳1,500",
       image: "/placeholder.svg?height=300&width=250&text=Light+Pink",
     },
-    { id: 18, name: "Black Formal", price: "৳1,800", image: "/placeholder.svg?height=300&width=250&text=Black+Formal" },
+    {
+      id: 18,
+      name: "Black Formal",
+      price: "৳1,800",
+      image: "/placeholder.svg?height=300&width=250&text=Black+Formal",
+    },
     {
       id: 19,
       name: "Light Blue Casual",
       price: "৳1,600",
       image: "/placeholder.svg?height=300&width=250&text=Light+Blue",
     },
-    { id: 20, name: "Navy Formal", price: "৳1,900", image: "/placeholder.svg?height=300&width=250&text=Navy+Formal" },
-  ]
+    {
+      id: 20,
+      name: "Navy Formal",
+      price: "৳1,900",
+      image: "/placeholder.svg?height=300&width=250&text=Navy+Formal",
+    },
+  ];
 
   const recentProducts = [
     {
@@ -106,9 +147,19 @@ export default function HomePage() {
       price: "৳1,600",
       image: "/placeholder.svg?height=200&width=150&text=Light+Blue",
     },
-    { id: 23, name: "Red Check Shirt", price: "৳1,700", image: "/placeholder.svg?height=200&width=150&text=Red+Check" },
-    { id: 24, name: "Beige Casual", price: "৳1,500", image: "/placeholder.svg?height=200&width=150&text=Beige" },
-  ]
+    {
+      id: 23,
+      name: "Red Check Shirt",
+      price: "৳1,700",
+      image: "/placeholder.svg?height=200&width=150&text=Red+Check",
+    },
+    {
+      id: 24,
+      name: "Beige Casual",
+      price: "৳1,500",
+      image: "/placeholder.svg?height=200&width=150&text=Beige",
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-white">
@@ -131,11 +182,18 @@ export default function HomePage() {
                 New
               </Button>
             </div>
-            <Button className="bg-black text-white px-8 py-2 rounded-full">View All Products</Button>
+            <Button className="bg-black text-white px-8 py-2 rounded-full">
+              View All Products
+            </Button>
           </div>
 
           <div className="relative h-96 rounded-lg overflow-hidden mb-8">
-            <Image src="/hero-image.png" alt="ARJO Collection" fill className="object-cover" />
+            <Image
+              src="/hero-image.png"
+              alt="ARJO Collection"
+              fill
+              className="object-cover"
+            />
           </div>
         </div>
       </section>
@@ -145,22 +203,7 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
             {products.map((product) => (
-              <Card key={product.id} className="group cursor-pointer">
-                <CardContent className="p-0">
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-t-lg">
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-medium text-sm mb-2">{product.name}</h3>
-                    <p className="text-lg font-bold">{product.price}</p>
-                  </div>
-                </CardContent>
-              </Card>
+              <ProductCard key={product.id} product={product} />
             ))}
           </div>
         </div>
@@ -173,7 +216,7 @@ export default function HomePage() {
 
           {/* Large Images */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
+            <div className="relative aspect-square rounded-lg overflow-hidden">
               <Image
                 src="/placeholder.svg?height=400&width=300&text=Seasonal+1"
                 alt="Seasonal Collection"
@@ -181,7 +224,7 @@ export default function HomePage() {
                 className="object-cover"
               />
             </div>
-            <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
+            <div className="relative aspect-square rounded-lg overflow-hidden">
               <Image
                 src="/placeholder.svg?height=400&width=300&text=Seasonal+2"
                 alt="Seasonal Collection"
@@ -189,7 +232,7 @@ export default function HomePage() {
                 className="object-cover"
               />
             </div>
-            <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
+            <div className="relative aspect-square rounded-lg overflow-hidden">
               <Image
                 src="/placeholder.svg?height=400&width=300&text=Seasonal+3"
                 alt="Seasonal Collection"
@@ -197,7 +240,7 @@ export default function HomePage() {
                 className="object-cover"
               />
             </div>
-            <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
+            <div className="relative aspect-square rounded-lg overflow-hidden">
               <Image
                 src="/placeholder.svg?height=400&width=300&text=Seasonal+4"
                 alt="Seasonal Collection"
@@ -212,7 +255,7 @@ export default function HomePage() {
             {seasonalProducts.map((product) => (
               <Card key={product.id} className="group cursor-pointer">
                 <CardContent className="p-0">
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-t-lg">
+                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
                     <Image
                       src={product.image || "/placeholder.svg"}
                       alt={product.name}
@@ -234,7 +277,7 @@ export default function HomePage() {
             {bottomProducts.map((product) => (
               <Card key={product.id} className="group cursor-pointer">
                 <CardContent className="p-0">
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-t-lg">
+                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
                     <Image
                       src={product.image || "/placeholder.svg"}
                       alt={product.name}
@@ -276,12 +319,14 @@ export default function HomePage() {
       {/* Recent Products */}
       <section className="py-8">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-8">RECENT ARRIVALS</h2>
+          <h2 className="text-2xl font-bold text-center mb-8">
+            RECENT ARRIVALS
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {recentProducts.map((product) => (
               <Card key={product.id} className="group cursor-pointer">
                 <CardContent className="p-0">
-                  <div className="relative aspect-[3/4] overflow-hidden rounded-t-lg">
+                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
                     <Image
                       src={product.image || "/placeholder.svg"}
                       alt={product.name}
@@ -306,7 +351,9 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
               <h3 className="text-xl font-bold mb-4">ARJO</h3>
-              <p className="text-gray-400 text-sm">Premium quality men's fashion and traditional wear.</p>
+              <p className="text-gray-400 text-sm">
+                Premium quality men's fashion and traditional wear.
+              </p>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Quick Links</h4>
@@ -373,5 +420,5 @@ export default function HomePage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
