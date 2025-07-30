@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Header from "@/components/header";
+import BannerSlider from "@/components/banner-slider";
 import { ProductCard } from "@/components/ProductCard";
 
 export default function HomePage() {
@@ -166,6 +167,9 @@ export default function HomePage() {
       {/* Header */}
       <Header />
 
+      {/* Banner Slider */}
+      <BannerSlider />
+
       {/* Hero Section */}
       <section className="py-8">
         <div className="container mx-auto px-4">
@@ -202,8 +206,8 @@ export default function HomePage() {
       <section className="py-8">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+            {products.map((product, i) => (
+              <ProductCard product={product} key={i} />
             ))}
           </div>
         </div>
@@ -216,7 +220,7 @@ export default function HomePage() {
 
           {/* Large Images */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-            <div className="relative aspect-square rounded-lg overflow-hidden">
+            <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
               <Image
                 src="/placeholder.svg?height=400&width=300&text=Seasonal+1"
                 alt="Seasonal Collection"
@@ -224,7 +228,7 @@ export default function HomePage() {
                 className="object-cover"
               />
             </div>
-            <div className="relative aspect-square rounded-lg overflow-hidden">
+            <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
               <Image
                 src="/placeholder.svg?height=400&width=300&text=Seasonal+2"
                 alt="Seasonal Collection"
@@ -232,7 +236,7 @@ export default function HomePage() {
                 className="object-cover"
               />
             </div>
-            <div className="relative aspect-square rounded-lg overflow-hidden">
+            <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
               <Image
                 src="/placeholder.svg?height=400&width=300&text=Seasonal+3"
                 alt="Seasonal Collection"
@@ -240,7 +244,7 @@ export default function HomePage() {
                 className="object-cover"
               />
             </div>
-            <div className="relative aspect-square rounded-lg overflow-hidden">
+            <div className="relative aspect-[3/4] rounded-lg overflow-hidden">
               <Image
                 src="/placeholder.svg?height=400&width=300&text=Seasonal+4"
                 alt="Seasonal Collection"
@@ -252,45 +256,15 @@ export default function HomePage() {
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            {seasonalProducts.map((product) => (
-              <Card key={product.id} className="group cursor-pointer">
-                <CardContent className="p-0">
-                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-medium text-sm mb-2">{product.name}</h3>
-                    <p className="text-lg font-bold">{product.price}</p>
-                  </div>
-                </CardContent>
-              </Card>
+            {seasonalProducts.map((product, i) => (
+              <ProductCard product={product} key={i} />
             ))}
           </div>
 
           {/* Bottom Row Products */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            {bottomProducts.map((product) => (
-              <Card key={product.id} className="group cursor-pointer">
-                <CardContent className="p-0">
-                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-medium text-sm mb-2">{product.name}</h3>
-                    <p className="text-lg font-bold">{product.price}</p>
-                  </div>
-                </CardContent>
-              </Card>
+            {bottomProducts.map((product, i) => (
+              <ProductCard product={product} key={i} />
             ))}
           </div>
 
@@ -323,23 +297,8 @@ export default function HomePage() {
             RECENT ARRIVALS
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {recentProducts.map((product) => (
-              <Card key={product.id} className="group cursor-pointer">
-                <CardContent className="p-0">
-                  <div className="relative aspect-square overflow-hidden rounded-t-lg">
-                    <Image
-                      src={product.image || "/placeholder.svg"}
-                      alt={product.name}
-                      fill
-                      className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                  </div>
-                  <div className="p-4">
-                    <h3 className="font-medium text-sm mb-2">{product.name}</h3>
-                    <p className="text-lg font-bold">{product.price}</p>
-                  </div>
-                </CardContent>
-              </Card>
+            {recentProducts.map((product, i) => (
+              <ProductCard product={product} key={i} />
             ))}
           </div>
         </div>

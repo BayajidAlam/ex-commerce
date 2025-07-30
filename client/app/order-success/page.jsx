@@ -1,70 +1,123 @@
 "use client"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { CheckCircle, Package, Truck } from "lucide-react"
+import { Card, CardContent } from "@/components/ui/card"
+import { CheckCircle } from "lucide-react"
 import Header from "@/components/header"
 import Link from "next/link"
 
 export default function OrderSuccessPage() {
-  const orderNumber = Math.random().toString(36).substr(2, 9).toUpperCase()
+  const orderNumber = "185853"
+  const orderDate = "2025/Jul/27 04:38 pm"
+  const total = "31,500 TK"
+  const paymentMethod = "Cash on delivery"
+
+  const orderDetails = [{ product: "Maulana Gold Vietnam × 9", total: "31,500 TK" }]
 
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
 
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-2xl mx-auto text-center">
-          <div className="mb-8">
-            <CheckCircle className="mx-auto h-24 w-24 text-green-500 mb-4" />
-            <h1 className="text-3xl font-bold text-green-600 mb-2">Order Placed Successfully!</h1>
-            <p className="text-gray-600">Thank you for your purchase. Your order has been confirmed.</p>
-          </div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="max-w-2xl mx-auto">
+          <Card className="overflow-hidden">
+            {/* Green Header */}
+            <div className="bg-green-600 text-white text-center py-8">
+              <CheckCircle className="mx-auto h-16 w-16 mb-4" />
+              <h1 className="text-3xl font-bold">Thank You</h1>
+            </div>
 
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Order Details</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="text-center">
-                <p className="text-sm text-gray-600">Order Number</p>
-                <p className="text-2xl font-bold text-primary">#{orderNumber}</p>
+            {/* Order Confirmation */}
+            <div className="bg-gray-100 text-center py-6">
+              <p className="text-gray-700">
+                Your order has been successfully submitted. One of our representatives will call you shortly.
+              </p>
+            </div>
+
+            <CardContent className="p-8 space-y-6">
+              {/* Order Summary */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                <div>
+                  <p className="text-gray-600">Order number:</p>
+                  <p className="font-semibold">{orderNumber}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Date:</p>
+                  <p className="font-semibold">{orderDate}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Total:</p>
+                  <p className="font-semibold">{total}</p>
+                </div>
+                <div>
+                  <p className="text-gray-600">Payment method:</p>
+                  <p className="font-semibold">{paymentMethod}</p>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-                <div className="text-center">
-                  <Package className="mx-auto h-8 w-8 text-blue-500 mb-2" />
-                  <p className="font-medium">Order Confirmed</p>
-                  <p className="text-sm text-gray-600">Your order is being prepared</p>
+              {/* Payment Info */}
+              <div className="text-center">
+                <p className="text-sm text-gray-600 mb-4">Pay with cash upon delivery.</p>
+                <div className="inline-block border-2 border-red-500 px-6 py-2">
+                  <span className="text-red-500 font-bold">Sample 01</span>
                 </div>
-                <div className="text-center">
-                  <Truck className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                  <p className="font-medium text-gray-400">Shipped</p>
-                  <p className="text-sm text-gray-400">We'll notify you when shipped</p>
+              </div>
+
+              {/* Order Details */}
+              <div>
+                <h2 className="text-xl font-semibold mb-4">Order details</h2>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">Product</span>
+                    <span className="font-medium">Total</span>
+                  </div>
+
+                  {orderDetails.map((item, index) => (
+                    <div key={index} className="flex justify-between items-center py-2 border-b">
+                      <span className="text-gray-700">{item.product}</span>
+                      <span className="font-semibold">{item.total}</span>
+                    </div>
+                  ))}
+
+                  <div className="space-y-2 pt-4">
+                    <div className="flex justify-between">
+                      <span>Subtotal</span>
+                      <span>31,500 TK</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Shipping</span>
+                      <span>0 TK</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Coupon</span>
+                      <span>0 TK</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span>Payment method</span>
+                      <span>Cash on delivery</span>
+                    </div>
+                    <div className="flex justify-between font-bold text-lg pt-2 border-t">
+                      <span>Total</span>
+                      <span>31,500 TK</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="text-center">
-                  <CheckCircle className="mx-auto h-8 w-8 text-gray-400 mb-2" />
-                  <p className="font-medium text-gray-400">Delivered</p>
-                  <p className="text-sm text-gray-400">Estimated 3-5 business days</p>
-                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+                <Link href="/products">
+                  <Button variant="outline" className="w-full sm:w-auto bg-transparent">
+                    Continue Shopping
+                  </Button>
+                </Link>
+                <Link href="/">
+                  <Button className="w-full sm:w-auto">Back to Home</Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
-
-          <div className="space-y-4">
-            <p className="text-gray-600">
-              We've sent a confirmation email with your order details and tracking information.
-            </p>
-
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/products">
-                <Button variant="outline">Continue Shopping</Button>
-              </Link>
-              <Link href="/">
-                <Button>Back to Home</Button>
-              </Link>
-            </div>
-          </div>
         </div>
       </div>
     </div>

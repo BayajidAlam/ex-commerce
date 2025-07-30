@@ -44,9 +44,6 @@ export default function Header() {
             <Link href="#" className="text-sm font-medium hover:text-gray-600">
               About
             </Link>
-            <Link href="#" className="text-sm font-medium hover:text-gray-600">
-              Contact
-            </Link>
           </nav>
 
           <div className="flex items-center space-x-4">
