@@ -3,134 +3,57 @@ import Header from "@/components/header";
 import BannerSlider from "@/components/banner-slider";
 import { ProductCard } from "@/components/ProductCard";
 import Categories from "@/components/UI/Home/Categories";
+import productImage from "../public/products/Aluna 250103.jpg";
 
 export default function HomePage() {
-  const products = [
-    {
-      id: 1,
-      name: "Cotton Casual Shirt",
-      price: "৳1,200",
-      image: "/placeholder.svg?height=300&width=250&text=Casual+Shirt",
-    },
-    {
-      id: 2,
-      name: "Formal White Shirt",
-      price: "৳1,500",
-      image: "/placeholder.svg?height=300&width=250&text=White+Shirt",
-    },
-    {
-      id: 3,
-      name: "Denim Casual Shirt",
-      price: "৳1,800",
-      image: "/placeholder.svg?height=300&width=250&text=Denim+Shirt",
-    },
-    {
-      id: 4,
-      name: "Striped Casual Shirt",
-      price: "৳1,400",
-      image: "/placeholder.svg?height=300&width=250&text=Striped+Shirt",
-    },
-    {
-      id: 5,
-      name: "Black Kurta",
-      price: "৳2,200",
-      image: "/placeholder.svg?height=300&width=250&text=Black+Kurta",
-    },
-    {
-      id: 6,
-      name: "White Panjabi",
-      price: "৳2,500",
-      image: "/placeholder.svg?height=300&width=250&text=White+Panjabi",
-    },
-    {
-      id: 7,
-      name: "Navy Kurta",
-      price: "৳2,000",
-      image: "/placeholder.svg?height=300&width=250&text=Navy+Kurta",
-    },
-    {
-      id: 8,
-      name: "Maroon Kurta",
-      price: "৳2,300",
-      image: "/placeholder.svg?height=300&width=250&text=Maroon+Kurta",
-    },
-  ];
-
   const seasonalProducts = [
     {
       id: 9,
       name: "Pink Casual Shirt",
       price: "৳1,600",
-      image: "/placeholder.svg?height=300&width=250&text=Pink+Shirt",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 10,
       name: "Light Green Shirt",
       price: "৳1,700",
-      image: "/placeholder.svg?height=300&width=250&text=Green+Shirt",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 11,
       name: "Striped Formal",
       price: "৳1,900",
-      image: "/placeholder.svg?height=300&width=250&text=Striped+Formal",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 12,
       name: "Beige Casual",
       price: "৳1,500",
-      image: "/placeholder.svg?height=300&width=250&text=Beige+Casual",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 13,
       name: "Check Pattern",
       price: "৳1,800",
-      image: "/placeholder.svg?height=300&width=250&text=Check+Pattern",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 14,
       name: "Cream Formal",
       price: "৳2,000",
-      image: "/placeholder.svg?height=300&width=250&text=Cream+Formal",
-    },
-    {
-      id: 15,
-      name: "Black Casual",
-      price: "৳1,400",
-      image: "/placeholder.svg?height=300&width=250&text=Black+Casual",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 16,
-      name: "Yellow Casual",
-      price: "৳1,300",
-      image: "/placeholder.svg?height=300&width=250&text=Yellow+Casual",
+      name: "Cream Formal",
+      price: "৳2,000",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
-  ];
-
-  const bottomProducts = [
     {
       id: 17,
-      name: "Light Pink Shirt",
-      price: "৳1,500",
-      image: "/placeholder.svg?height=300&width=250&text=Light+Pink",
-    },
-    {
-      id: 18,
-      name: "Black Formal",
-      price: "৳1,800",
-      image: "/placeholder.svg?height=300&width=250&text=Black+Formal",
-    },
-    {
-      id: 19,
-      name: "Light Blue Casual",
-      price: "৳1,600",
-      image: "/placeholder.svg?height=300&width=250&text=Light+Blue",
-    },
-    {
-      id: 20,
-      name: "Navy Formal",
-      price: "৳1,900",
-      image: "/placeholder.svg?height=300&width=250&text=Navy+Formal",
+      name: "Cream Formal",
+      price: "৳2,000",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
   ];
 
@@ -139,25 +62,25 @@ export default function HomePage() {
       id: 21,
       name: "Yellow Casual Shirt",
       price: "৳1,400",
-      image: "/placeholder.svg?height=200&width=150&text=Yellow",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 22,
       name: "Light Blue Shirt",
       price: "৳1,600",
-      image: "/placeholder.svg?height=200&width=150&text=Light+Blue",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 23,
       name: "Red Check Shirt",
       price: "৳1,700",
-      image: "/placeholder.svg?height=200&width=150&text=Red+Check",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 24,
       name: "Beige Casual",
       price: "৳1,500",
-      image: "/placeholder.svg?height=200&width=150&text=Beige",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
   ];
 

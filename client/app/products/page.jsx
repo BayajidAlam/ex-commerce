@@ -1,11 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -14,7 +11,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Search, Filter, ShoppingCart } from "lucide-react";
+import { Search, Filter } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import Header from "@/components/header";
 import { useSearchParams } from "next/navigation";
@@ -38,112 +35,112 @@ export default function ProductsPage() {
       name: "Cotton Casual Shirt",
       price: "৳1,200",
       category: "casual",
-      image: "/placeholder.svg?height=300&width=250&text=Casual+Shirt",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 2,
       name: "Formal White Shirt",
       price: "৳1,500",
       category: "formal",
-      image: "/placeholder.svg?height=300&width=250&text=White+Shirt",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 3,
       name: "Denim Casual Shirt",
       price: "৳1,800",
       category: "casual",
-      image: "/placeholder.svg?height=300&width=250&text=Denim+Shirt",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 4,
       name: "Striped Casual Shirt",
       price: "৳1,400",
       category: "casual",
-      image: "/placeholder.svg?height=300&width=250&text=Striped+Shirt",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 5,
       name: "Black Kurta",
       price: "৳2,200",
       category: "traditional",
-      image: "/placeholder.svg?height=300&width=250&text=Black+Kurta",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 6,
       name: "White Panjabi",
       price: "৳2,500",
       category: "traditional",
-      image: "/placeholder.svg?height=300&width=250&text=White+Panjabi",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 7,
       name: "Navy Kurta",
       price: "৳2,000",
       category: "traditional",
-      image: "/placeholder.svg?height=300&width=250&text=Navy+Kurta",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 8,
       name: "Maroon Kurta",
       price: "৳2,300",
       category: "traditional",
-      image: "/placeholder.svg?height=300&width=250&text=Maroon+Kurta",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 9,
       name: "Pink Casual Shirt",
       price: "৳1,600",
       category: "casual",
-      image: "/placeholder.svg?height=300&width=250&text=Pink+Shirt",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 10,
       name: "Light Green Shirt",
       price: "৳1,700",
       category: "formal",
-      image: "/placeholder.svg?height=300&width=250&text=Green+Shirt",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 11,
       name: "Striped Formal",
       price: "৳1,900",
       category: "formal",
-      image: "/placeholder.svg?height=300&width=250&text=Striped+Formal",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 12,
       name: "Beige Casual",
       price: "৳1,500",
       category: "casual",
-      image: "/placeholder.svg?height=300&width=250&text=Beige+Casual",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 13,
       name: "Check Pattern",
       price: "৳1,800",
       category: "casual",
-      image: "/placeholder.svg?height=300&width=250&text=Check+Pattern",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 14,
       name: "Cream Formal",
       price: "৳2,000",
       category: "formal",
-      image: "/placeholder.svg?height=300&width=250&text=Cream+Formal",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 15,
       name: "Black Casual",
       price: "৳1,400",
       category: "casual",
-      image: "/placeholder.svg?height=300&width=250&text=Black+Casual",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
       id: 16,
       name: "Yellow Casual",
       price: "৳1,300",
       category: "casual",
-      image: "/placeholder.svg?height=300&width=250&text=Yellow+Casual",
+      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
   ];
 
