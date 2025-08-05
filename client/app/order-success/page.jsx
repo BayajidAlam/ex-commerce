@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { CheckCircle } from "lucide-react"
+import { CheckCircle, Download } from "lucide-react"
 import Header from "@/components/header"
 import Link from "next/link"
 
@@ -13,6 +13,123 @@ export default function OrderSuccessPage() {
   const paymentMethod = "Cash on delivery"
 
   const orderDetails = [{ product: "Maulana Gold Vietnam × 9", total: "31,500 TK" }]
+
+  // Customer details (you can get this from checkout form data or store)
+  const customerInfo = {
+    name: "John Doe",
+    email: "john@example.com",
+    phone: "+880 1234 567890",
+    address: "123 Main Street, Dhaka, Bangladesh"
+  }
+
+  const downloadInvoice = () => {
+    // Create invoice HTML content
+    const invoiceHTML = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+        <title>Invoice #${orderNumber}</title>
+        <style>
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+          .header { text-align: center; margin-bottom: 30px; }
+          .company-name { font-size: 24px; font-weight: bold; color: #333; }
+          .invoice-title { font-size: 20px; margin: 10px 0; }
+          .info-section { margin: 20px 0; }
+          .info-row { display: flex; justify-content: space-between; margin: 5px 0; }
+          .table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+          .table th, .table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+          .table th { background-color: #f5f5f5; font-weight: bold; }
+          .total-row { font-weight: bold; background-color: #f9f9f9; }
+          .footer { margin-top: 30px; text-align: center; color: #666; }
+          @media print { body { margin: 0; } }
+        </style>
+      </head>
+      <body>
+        <div class="header">
+          <div class="company-name">ARJO</div>
+          <div class="invoice-title">INVOICE</div>
+        </div>
+
+        <div class="info-section">
+          <div class="info-row">
+            <div><strong>Invoice #:</strong> ${orderNumber}</div>
+            <div><strong>Date:</strong> ${orderDate}</div>
+          </div>
+          <div class="info-row">
+            <div><strong>Payment Method:</strong> ${paymentMethod}</div>
+            <div><strong>Status:</strong> Pending</div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3>Bill To:</h3>
+          <div>${customerInfo.name}</div>
+          <div>${customerInfo.email}</div>
+          <div>${customerInfo.phone}</div>
+          <div>${customerInfo.address}</div>
+        </div>
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${orderDetails.map(item => `
+              <tr>
+                <td>${item.product.split(' × ')[0]}</td>
+                <td>${item.product.split(' × ')[1] || '1'}</td>
+                <td>${item.total}</td>
+                <td>${item.total}</td>
+              </tr>
+            `).join('')}
+            <tr class="total-row">
+              <td colspan="2">Subtotal</td>
+              <td></td>
+              <td>31,500 TK</td>
+            </tr>
+            <tr>
+              <td colspan="2">Shipping</td>
+              <td></td>
+              <td>0 TK</td>
+            </tr>
+            <tr>
+              <td colspan="2">Tax</td>
+              <td></td>
+              <td>0 TK</td>
+            </tr>
+            <tr class="total-row">
+              <td colspan="2"><strong>Total Amount</strong></td>
+              <td></td>
+              <td><strong>31,500 TK</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="footer">
+          <p>Thank you for your business!</p>
+          <p>For any queries, contact us at support@arjo.com or +880 123 456 7890</p>
+        </div>
+      </body>
+      </html>
+    `
+
+    // Create and download the invoice
+    const blob = new Blob([invoiceHTML], { type: 'text/html' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `Invoice-${orderNumber}.html`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -59,7 +176,7 @@ export default function OrderSuccessPage() {
               <div className="text-center">
                 <p className="text-sm text-gray-600 mb-4">Pay with cash upon delivery.</p>
                 <div className="inline-block border-2 border-red-500 px-6 py-2">
-                  <span className="text-red-500 font-bold">Sample 01</span>
+                  <span className="text-red-500 font-bold">Sample Order #01</span>
                 </div>
               </div>
 
@@ -103,6 +220,18 @@ export default function OrderSuccessPage() {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Download Invoice Button */}
+              <div className="text-center py-4">
+                <Button 
+                  onClick={downloadInvoice}
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                  size="lg"
+                >
+                  <Download className="mr-2 h-5 w-5" />
+                  Download Invoice
+                </Button>
               </div>
 
               {/* Action Buttons */}
