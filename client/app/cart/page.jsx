@@ -48,7 +48,7 @@ export default function CartPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {items.map((item) => (
-                  <div key={item.id} className="flex items-center space-x-4 p-4 border rounded-lg">
+                  <div key={item.itemKey} className="flex items-center space-x-4 py-4 border-b last:border-b-0">
                     <div className="relative w-20 h-20 flex-shrink-0">
                       <Image
                         src={item.image || "/placeholder.svg"}
@@ -58,24 +58,33 @@ export default function CartPage() {
                       />
                     </div>
 
-                    <div className="flex-1">
-                      <h3 className="font-medium">{item.name}</h3>
-                      <p className="text-sm text-gray-600 capitalize">{item.category}</p>
-                      <p className="font-bold text-primary">{item.price}</p>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-lg">{item.name}</h3>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm text-gray-600">
+                        {item.selectedColor && (
+                          <span>Color: <span className="font-medium">{item.selectedColor}</span></span>
+                        )}
+                        {item.selectedSize && (
+                          <span>Size: <span className="font-medium">{item.selectedSize}</span></span>
+                        )}
+                      </div>
+                      <p className="text-lg font-bold text-primary mt-1">{item.price}</p>
                     </div>
 
                     <div className="flex items-center space-x-2">
-                      <Button variant="outline" size="icon" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        onClick={() => updateQuantity(item.itemKey, item.quantity - 1)}
+                      >
                         <Minus className="h-4 w-4" />
                       </Button>
-                      <Input
-                        type="number"
-                        value={item.quantity}
-                        onChange={(e) => updateQuantity(item.id, Number.parseInt(e.target.value) || 1)}
-                        className="w-16 text-center"
-                        min="1"
-                      />
-                      <Button variant="outline" size="icon" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
+                      <span className="w-12 text-center font-semibold">{item.quantity}</span>
+                      <Button 
+                        variant="outline" 
+                        size="icon" 
+                        onClick={() => updateQuantity(item.itemKey, item.quantity + 1)}
+                      >
                         <Plus className="h-4 w-4" />
                       </Button>
                     </div>
@@ -83,7 +92,7 @@ export default function CartPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeItem(item.itemKey)}
                       className="text-red-500 hover:text-red-700"
                     >
                       <Trash2 className="h-4 w-4" />
@@ -112,15 +121,18 @@ export default function CartPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   {items.map((item) => (
-                    <div key={item.id} className="flex justify-between text-sm">
-                      <span>
-                        {item.name} × {item.quantity}
+                    <div key={item.itemKey} className="flex justify-between text-sm">
+                      <span className="flex-1 truncate">
+                        {item.name}
+                        {item.selectedColor && item.selectedSize && (
+                          <span className="text-gray-500 text-xs block">
+                            {item.selectedColor}, {item.selectedSize}
+                          </span>
+                        )}
+                        <span className="text-gray-500"> × {item.quantity}</span>
                       </span>
-                      <span>
-                        ৳
-                        {(
-                          Number.parseFloat(item.price.replace("৳", "").replace(",", "")) * item.quantity
-                        ).toLocaleString()}
+                      <span className="font-semibold ml-2">
+                        ৳{(parseFloat(item.price.replace("৳", "").replace(",", "")) * item.quantity).toLocaleString()}
                       </span>
                     </div>
                   ))}
@@ -145,12 +157,19 @@ export default function CartPage() {
 
                 <Separator />
 
-                <div className="flex justify-between font-bold text-lg">
+                <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
                   <span>৳{(totalPrice + 100 + Math.round(totalPrice * 0.05)).toLocaleString()}</span>
                 </div>
 
-                <Link href="/checkout" className="w-full">
+                <div className="space-y-2">
+                  <Input placeholder="Coupon code" />
+                  <Button variant="outline" className="w-full">
+                    Apply Coupon
+                  </Button>
+                </div>
+
+                <Link href="/checkout">
                   <Button className="w-full" size="lg">
                     Proceed to Checkout
                   </Button>

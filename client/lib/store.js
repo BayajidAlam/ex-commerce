@@ -7,28 +7,50 @@ export const useCartStore = create(
   persist(
     (set, get) => ({
       items: [],
-      addItem: (product) => {
+      addItem: (product, selectedColor, selectedSize, quantity = 1) => {
         const items = get().items
-        const existingItem = items.find((item) => item.id === product.id)
+        // Create unique key based on product id, color, and size
+        const itemKey = `${product.id}-${selectedColor}-${selectedSize}`
+        const existingItem = items.find((item) => 
+          item.id === product.id && 
+          item.selectedColor === selectedColor && 
+          item.selectedSize === selectedSize
+        )
 
         if (existingItem) {
           set({
-            items: items.map((item) => (item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item)),
+            items: items.map((item) => 
+              item.id === product.id && 
+              item.selectedColor === selectedColor && 
+              item.selectedSize === selectedSize
+                ? { ...item, quantity: item.quantity + quantity }
+                : item
+            ),
           })
         } else {
-          set({ items: [...items, { ...product, quantity: 1 }] })
+          set({ 
+            items: [...items, { 
+              ...product, 
+              selectedColor, 
+              selectedSize, 
+              quantity,
+              itemKey 
+            }] 
+          })
         }
       },
-      removeItem: (productId) => {
-        set({ items: get().items.filter((item) => item.id !== productId) })
+      removeItem: (itemKey) => {
+        set({ items: get().items.filter((item) => item.itemKey !== itemKey) })
       },
-      updateQuantity: (productId, quantity) => {
+      updateQuantity: (itemKey, quantity) => {
         if (quantity <= 0) {
-          get().removeItem(productId)
+          get().removeItem(itemKey)
           return
         }
         set({
-          items: get().items.map((item) => (item.id === productId ? { ...item, quantity } : item)),
+          items: get().items.map((item) => 
+            item.itemKey === itemKey ? { ...item, quantity } : item
+          ),
         })
       },
       clearCart: () => set({ items: [] }),

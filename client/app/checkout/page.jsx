@@ -1,23 +1,34 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Separator } from "@/components/ui/separator"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { useCartStore, useAuthStore } from "@/lib/store"
-import Header from "@/components/header"
-import { useRouter } from "next/navigation"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useCartStore, useAuthStore } from "@/lib/store";
+import Header from "@/components/header";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { toast } from "sonner";
 
 export default function CheckoutPage() {
-  const router = useRouter()
-  const { items, getTotalPrice, clearCart } = useCartStore()
-  const { isAuthenticated } = useAuthStore()
-  const [isProcessing, setIsProcessing] = useState(false)
+  const router = useRouter();
+  const { items, getTotalPrice, clearCart } = useCartStore();
+  const { isAuthenticated } = useAuthStore();
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Mock cities array - replace with your cities constant
+  const cities = ["Dhaka", "Chittagong", "Sylhet", "Rajshahi", "Khulna", "Barishal", "Rangpur", "Mymensingh"];
 
   const [formData, setFormData] = useState({
     email: "",
@@ -29,32 +40,76 @@ export default function CheckoutPage() {
     phone: "",
     paymentMethod: "cod",
     notes: "",
-  })
+    tranxId: "",
+  });
 
-  const totalPrice = getTotalPrice()
-  const shipping = 100
-  const tax = Math.round(totalPrice * 0.05)
-  const finalTotal = totalPrice + shipping + tax
+  const totalPrice = getTotalPrice();
+  const shipping = formData.city === "dhaka" ? 100 : 120;
+  const tax = Math.round(totalPrice * 0.05);
+  const finalTotal = totalPrice + shipping + tax;
 
   const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const validateForm = () => {
+    // Check required fields
+    const requiredFields = ['email', 'firstName', 'lastName', 'address', 'city', 'postalCode', 'phone'];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        toast.error(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+        return false;
+      }
+    }
+
+    // Validate transaction ID for COD
+    if (formData.paymentMethod === "cod" && !formData.tranxId) {
+      toast.error("Please enter the Transaction ID for delivery charge payment");
+      return false;
+    }
+
+    // Validate transaction ID format (basic validation)
+    if (formData.paymentMethod === "cod" && formData.tranxId.length < 6) {
+      toast.error("Please enter a valid Transaction ID");
+      return false;
+    }
+
+    return true;
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setIsProcessing(true)
+    e.preventDefault();
+    
+    // Validate form before processing
+    if (!validateForm()) {
+      return;
+    }
 
-    // Simulate order processing
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    setIsProcessing(true);
 
-    // Clear cart and redirect
-    clearCart()
-    router.push("/order-success")
-  }
+    try {
+      // Simulate order processing
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-  if (items.length === 0) {
-    router.push("/cart")
-    return null
+      // Show success toast
+      toast.success("Order placed successfully! You will receive a confirmation call shortly.");
+
+      // Clear cart first, then navigate immediately
+      clearCart();
+      
+      // Navigate to order success page immediately
+      router.push("/order-success");
+
+    } catch (error) {
+      toast.error("Something went wrong. Please try again.");
+      setIsProcessing(false);
+    }
+  };
+
+  // Only redirect to cart if items are empty AND we're not processing an order
+  if (items.length === 0 && !isProcessing) {
+    router.push("/cart");
+    return null;
   }
 
   return (
@@ -79,18 +134,34 @@ export default function CheckoutPage() {
                     <Input
                       id="email"
                       type="email"
+                      placeholder="john@example.com"
                       value={formData.email}
-                      onChange={(e) => handleInputChange("email", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("email", e.target.value)
+                      }
+                      required
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+880 1234 567890"
+                      value={formData.phone}
+                      onChange={(e) =>
+                        handleInputChange("phone", e.target.value)
+                      }
                       required
                     />
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Shipping Address */}
+              {/* Shipping Information */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Shipping Address</CardTitle>
+                  <CardTitle>Shipping Information</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
@@ -98,8 +169,11 @@ export default function CheckoutPage() {
                       <Label htmlFor="firstName">First Name</Label>
                       <Input
                         id="firstName"
+                        placeholder="John"
                         value={formData.firstName}
-                        onChange={(e) => handleInputChange("firstName", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("firstName", e.target.value)
+                        }
                         required
                       />
                     </div>
@@ -107,36 +181,36 @@ export default function CheckoutPage() {
                       <Label htmlFor="lastName">Last Name</Label>
                       <Input
                         id="lastName"
+                        placeholder="Doe"
                         value={formData.lastName}
-                        onChange={(e) => handleInputChange("lastName", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("lastName", e.target.value)
+                        }
                         required
                       />
                     </div>
                   </div>
-
-                  <div>
-                    <Label htmlFor="address">Address</Label>
-                    <Input
-                      id="address"
-                      value={formData.address}
-                      onChange={(e) => handleInputChange("address", e.target.value)}
-                      required
-                    />
-                  </div>
-
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="city">City</Label>
-                      <Select onValueChange={(value) => handleInputChange("city", value)}>
+                      <Select
+                        onValueChange={(value) =>
+                          handleInputChange("city", value)
+                        }
+                        required
+                      >
                         <SelectTrigger>
                           <SelectValue placeholder="Select city" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="dhaka">Dhaka</SelectItem>
-                          <SelectItem value="chittagong">Chittagong</SelectItem>
-                          <SelectItem value="sylhet">Sylhet</SelectItem>
-                          <SelectItem value="rajshahi">Rajshahi</SelectItem>
-                          <SelectItem value="khulna">Khulna</SelectItem>
+                          {cities.map((city) => (
+                            <SelectItem
+                              key={city.toLowerCase()}
+                              value={city.toLowerCase()}
+                            >
+                              {city}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -144,20 +218,24 @@ export default function CheckoutPage() {
                       <Label htmlFor="postalCode">Postal Code</Label>
                       <Input
                         id="postalCode"
+                        placeholder="1000"
                         value={formData.postalCode}
-                        onChange={(e) => handleInputChange("postalCode", e.target.value)}
+                        onChange={(e) =>
+                          handleInputChange("postalCode", e.target.value)
+                        }
                         required
                       />
                     </div>
                   </div>
-
                   <div>
-                    <Label htmlFor="phone">Phone Number</Label>
+                    <Label htmlFor="address">Address</Label>
                     <Input
-                      id="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={(e) => handleInputChange("phone", e.target.value)}
+                      id="address"
+                      placeholder="123 Main Street"
+                      value={formData.address}
+                      onChange={(e) =>
+                        handleInputChange("address", e.target.value)
+                      }
                       required
                     />
                   </div>
@@ -172,21 +250,58 @@ export default function CheckoutPage() {
                 <CardContent>
                   <RadioGroup
                     value={formData.paymentMethod}
-                    onValueChange={(value) => handleInputChange("paymentMethod", value)}
+                    onValueChange={(value) =>
+                      handleInputChange("paymentMethod", value)
+                    }
                   >
                     <div className="flex items-center space-x-2">
                       <RadioGroupItem value="cod" id="cod" />
                       <Label htmlFor="cod">Cash on Delivery</Label>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="bkash" id="bkash" />
-                      <Label htmlFor="bkash">bKash</Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="nagad" id="nagad" />
-                      <Label htmlFor="nagad">Nagad</Label>
-                    </div>
                   </RadioGroup>
+
+                  {formData.paymentMethod === "cod" && (
+                    <div className="mt-4 space-y-4">
+                      <div>
+                        <p className="font-medium">
+                          Delivery Charge:{" "}
+                          <span className="text-green-600 font-semibold">
+                            ৳{shipping}
+                          </span>
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-sm text-gray-700">
+                          Please send the delivery charge to the number below
+                          and submit the Transaction ID.
+                        </p>
+                        <p className="font-semibold mt-1">
+                          bKash / Nagad / Rocket Number:{" "}
+                          <span className="text-blue-600">017XXXXXXXX</span>
+                        </p>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="tranxId">
+                          Transaction ID <span className="text-red-500">*</span>
+                        </Label>
+                        <Input
+                          id="tranxId"
+                          placeholder="e.g. TX123456789"
+                          value={formData.tranxId}
+                          onChange={(e) =>
+                            handleInputChange("tranxId", e.target.value)
+                          }
+                          className="mt-1"
+                          required
+                        />
+                        <p className="text-xs text-gray-600 mt-1">
+                          Enter the transaction ID you received after sending the delivery charge
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -197,9 +312,10 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent>
                   <Textarea
-                    placeholder="Special instructions for your order..."
+                    placeholder="Any special instructions for your order..."
                     value={formData.notes}
                     onChange={(e) => handleInputChange("notes", e.target.value)}
+                    rows={3}
                   />
                 </CardContent>
               </Card>
@@ -207,55 +323,123 @@ export default function CheckoutPage() {
 
             {/* Order Summary */}
             <div>
-              <Card className="sticky top-24">
+              <Card className="sticky top-8">
                 <CardHeader>
                   <CardTitle>Order Summary</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
+                  {/* Order Items */}
                   <div className="space-y-3">
                     {items.map((item) => (
-                      <div key={item.id} className="flex justify-between items-center">
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">{item.name}</p>
-                          <p className="text-xs text-gray-600">Qty: {item.quantity}</p>
+                      <div
+                        key={item.itemKey}
+                        className="flex items-start space-x-3 py-2 border-b last:border-b-0"
+                      >
+                        <div className="relative w-16 h-16 flex-shrink-0">
+                          <Image
+                            src={item.image || "/placeholder.svg"}
+                            alt={item.name}
+                            fill
+                            className="object-cover rounded"
+                          />
                         </div>
-                        <p className="font-medium">
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-medium text-sm leading-tight">
+                            {item.name}
+                          </h4>
+                          <div className="flex flex-col gap-1 text-xs text-gray-600 mt-1">
+                            {item.selectedColor && (
+                              <span>
+                                Color:{" "}
+                                <span className="font-medium">
+                                  {item.selectedColor}
+                                </span>
+                              </span>
+                            )}
+                            {item.selectedSize && (
+                              <span>
+                                Size:{" "}
+                                <span className="font-medium">
+                                  {item.selectedSize}
+                                </span>
+                              </span>
+                            )}
+                            <span>
+                              Qty:{" "}
+                              <span className="font-medium">
+                                {item.quantity}
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-sm font-semibold">
                           ৳
                           {(
-                            Number.parseFloat(item.price.replace("৳", "").replace(",", "")) * item.quantity
+                            parseFloat(
+                              item.price.replace("৳", "").replace(",", "")
+                            ) * item.quantity
                           ).toLocaleString()}
-                        </p>
+                        </div>
                       </div>
                     ))}
                   </div>
 
                   <Separator />
 
+                  {/* Price Breakdown */}
                   <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span>Subtotal</span>
+                    <div className="flex justify-between text-sm">
+                      <span>
+                        Subtotal (
+                        {items.reduce(
+                          (total, item) => total + item.quantity,
+                          0
+                        )}{" "}
+                        items)
+                      </span>
                       <span>৳{totalPrice.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Shipping</span>
-                      <span>৳{shipping}</span>
+                    <div className="flex justify-between text-sm">
+                      <span>Shipping ({formData.city === "dhaka" ? "Inside Dhaka" : "Outside Dhaka"})</span>
+                      <span>৳{shipping.toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between">
-                      <span>Tax</span>
+                    <div className="flex justify-between text-sm">
+                      <span>Tax (5%)</span>
                       <span>৳{tax.toLocaleString()}</span>
                     </div>
                   </div>
 
                   <Separator />
 
-                  <div className="flex justify-between font-bold text-lg">
+                  <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
                     <span>৳{finalTotal.toLocaleString()}</span>
                   </div>
 
-                  <Button type="submit" className="w-full" size="lg" disabled={isProcessing}>
-                    {isProcessing ? "Processing..." : "Place Order"}
+                  {/* Coupon Code */}
+                  <div className="space-y-2">
+                    <Input placeholder="Enter coupon code" />
+                    <Button variant="outline" className="w-full" type="button">
+                      Apply Coupon
+                    </Button>
+                  </div>
+
+                  {/* Place Order Button */}
+                  <Button
+                    type="submit"
+                    className="w-full"
+                    size="lg"
+                    disabled={isProcessing}
+                  >
+                    {isProcessing
+                      ? "Processing Order..."
+                      : `Place Order - ৳${finalTotal.toLocaleString()}`}
                   </Button>
+
+                  <p className="text-xs text-gray-600 text-center">
+                    By placing your order, you agree to our Terms of Service and
+                    Privacy Policy.
+                  </p>
                 </CardContent>
               </Card>
             </div>
@@ -263,5 +447,5 @@ export default function CheckoutPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }
