@@ -50,7 +50,7 @@ export default function BannerSlider() {
   }, [])
 
   return (
-    <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+    <div className="relative w-full h-[500px] md:h-[700px] overflow-hidden">
       {/* Slides */}
       <div
         className="flex transition-transform duration-500 ease-in-out h-full"

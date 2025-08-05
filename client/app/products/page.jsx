@@ -145,9 +145,10 @@ export default function ProductsPage() {
   ];
 
   const categories = [
-    { id: "casual", label: "Casual Shirts" },
-    { id: "formal", label: "Formal Shirts" },
-    { id: "traditional", label: "Traditional Wear" },
+    { id: "bag", label: "Bag" },
+    { id: "jewellry", label: "Jewellry" },
+    { id: "glass", label: "Glass" },
+    { id: "watch", label: "Watch" },
   ];
 
   useEffect(() => {
@@ -218,7 +219,7 @@ export default function ProductsPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Filters Sidebar */}
-          <div className="lg:w-1/4">
+          <div className="lg:w-1/5">
             <Card className="p-6">
               <h3 className="text-lg font-semibold mb-4 flex items-center">
                 <Filter className="mr-2 h-5 w-5" />
@@ -305,7 +306,7 @@ export default function ProductsPage() {
           </div>
 
           {/* Products Grid */}
-          <div className="lg:w-3/4">
+          <div className="lg:w-4/5">
             <div className="flex justify-between items-center mb-6">
               <h1 className="text-2xl font-bold">
                 Products ({filteredProducts.length})
