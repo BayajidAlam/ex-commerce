@@ -18,6 +18,7 @@ import {
   Heart,
   Minus,
   Plus,
+  Ruler,
 } from "lucide-react";
 import { useCartStore } from "@/lib/store";
 import Header from "@/components/header";
@@ -29,7 +30,6 @@ export default function ProductDetailPage() {
   const router = useRouter();
   const { addItem } = useCartStore();
   const [selectedImage, setSelectedImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState("");
   const [selectedColor, setSelectedColor] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(true);
@@ -44,6 +44,8 @@ export default function ProductDetailPage() {
     originalPrice: "৳3,000",
     category: "traditional",
     material: "Remi Rayon",
+    // Updated: dimensions instead of sizes array
+    dimensions: "22cm x 20cm x 12cm",
     images: [
       "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
       "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
@@ -55,82 +57,87 @@ export default function ProductDetailPage() {
       { name: "Cream", value: "#F5F5DC" },
       { name: "Light Blue", value: "#ADD8E6" },
     ],
-    sizes: ["S", "M", "L", "XL", "XXL"],
     inStock: true,
-    description: `Experience timeless elegance with Arjo's White Premium Panjabi, crafted from premium Remi Rayon for ultimate comfort. This panjabi offers a breathable, soft feel, ensuring effortless wear throughout the day. Designed with a tailored fit, it seamlessly blends tradition with modern sophistication, making it perfect for any occasion, be it casual gatherings or festive celebrations. If you're looking for high-quality panjabi for men in BD, this refined piece is a must-have in your collection.`,
+    description: `Experience timeless elegance with Arjo's White Premium Panjabi, crafted from premium Remi Rayon for ultimate comfort. This panjabi offers a breathable, soft feel, ensuring effortless wear throughout the day. Designed with a tailored fit, it seamlessly blends tradition with modern sophistication, making it perfect for any occasion, be it casual gatherings or festive celebrations. If you're looking for high-quality panjabi for men in BD, this refined piece is a must-have in your collection. Elevate your style with Arjo today!`,
   };
 
-  // Validation function
-  const validateSelection = () => {
-    const errors = [];
-    if (!selectedColor) {
-      errors.push("Please select a color");
-    }
-    if (!selectedSize) {
-      errors.push("Please select a size");
-    }
-    
-    if (errors.length > 0) {
-      alert(errors.join("\n"));
-      return false;
-    }
-    return true;
-  };
-
-  // Handle Add to Cart
+  // Updated: Add color validation for both buttons
   const handleAddToCart = () => {
-    if (!validateSelection()) return;
-    
-    addItem(product, selectedColor, selectedSize, quantity);
-    alert(`Added ${product.name} (${selectedColor}, ${selectedSize}) to cart!`);
+    if (!selectedColor) {
+      alert("Please select a color");
+      return;
+    }
+
+    const cartItem = {
+      ...product,
+      selectedColor,
+      quantity,
+    };
+
+    for (let i = 0; i < quantity; i++) {
+      addItem(cartItem);
+    }
+
+    alert("Added to cart!");
   };
 
-  // Handle Order Now
+  // New: Handle Order Now - goes directly to checkout
   const handleOrderNow = () => {
-    if (!validateSelection()) return;
-    
-    addItem(product, selectedColor, selectedSize, quantity);
+    if (!selectedColor) {
+      alert("Please select a color");
+      return;
+    }
+
+    const cartItem = {
+      ...product,
+      selectedColor,
+      quantity,
+    };
+
+    for (let i = 0; i < quantity; i++) {
+      addItem(cartItem);
+    }
+
+    // Redirect to checkout page
     router.push("/checkout");
   };
 
-  // Mock related products
-  const relatedProducts = [
+  const recentProducts = [
     {
-      id: 2,
-      name: "Black Premium Panjabi",
-      price: "৳2,800",
+      id: 21,
+      name: "Yellow Casual Shirt",
+      price: "৳1,400",
       image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
-      id: 3,
-      name: "Navy Blue Panjabi",
-      price: "৳2,600",
+      id: 22,
+      name: "Light Blue Shirt",
+      price: "৳1,600",
       image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
-      id: 4,
-      name: "Grey Cotton Panjabi",
-      price: "৳2,400",
+      id: 23,
+      name: "Red Check Shirt",
+      price: "৳1,700",
       image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
     {
-      id: 5,
-      name: "Maroon Festive Panjabi",
-      price: "৳3,200",
+      id: 24,
+      name: "Beige Casual",
+      price: "৳1,500",
       image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-white">
       <Header />
 
       <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Product Images */}
           <div className="space-y-4">
-            {/* Main Image */}
-            <div className="aspect-square relative overflow-hidden rounded-lg bg-white">
+            <div className="relative h-[550px] overflow-hidden rounded-lg border">
               <Image
                 src={product.images[selectedImage] || "/placeholder.svg"}
                 alt={product.name}
@@ -139,13 +146,12 @@ export default function ProductDetailPage() {
               />
             </div>
 
-            {/* Thumbnail Images */}
             <div className="grid grid-cols-4 gap-2">
               {product.images.map((image, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
-                  className={`aspect-square relative overflow-hidden rounded border-2 ${
+                  className={`relative aspect-square overflow-hidden rounded border-2 ${
                     selectedImage === index
                       ? "border-primary"
                       : "border-gray-200"
@@ -178,6 +184,8 @@ export default function ProductDetailPage() {
                 <Badge variant="destructive">Save ৳500</Badge>
               </div>
               <p className="text-gray-600 mb-4">Material: {product.material}</p>
+
+              
               <div className="flex items-center space-x-2">
                 <Badge variant={product.inStock ? "default" : "secondary"}>
                   {product.inStock ? "In Stock" : "Out of Stock"}
@@ -185,10 +193,26 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Color Selection */}
+
+ {/* Dimensions Display - Replaced Size Selection */}
+            <div>
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <Ruler className="h-4 w-4" />
+                Dimensions
+              </h3>
+              <div className="py-3 px-4 border border-gray-200 rounded-lg bg-gray-50">
+                <p className="text-lg font-medium text-gray-800">
+                  {product.dimensions}
+                </p>
+                <p className="text-sm text-gray-600 mt-1">
+                  Length × Width × Height
+                </p>
+              </div>
+            </div>
+            {/* Color Selection - Made Required */}
             <div>
               <h3 className="font-semibold mb-3">
-                Color {!selectedColor && <span className="text-red-500">*</span>}
+                Color <span className="text-red-500">*</span>
               </h3>
               <div className="flex space-x-3">
                 {product.colors.map((color) => (
@@ -205,39 +229,9 @@ export default function ProductDetailPage() {
                   </button>
                 ))}
               </div>
-              {selectedColor && (
-                <p className="text-sm text-gray-600 mt-2">
-                  Selected: {selectedColor}
-                </p>
-              )}
             </div>
 
-            {/* Size Selection */}
-            <div>
-              <h3 className="font-semibold mb-3">
-                Size {!selectedSize && <span className="text-red-500">*</span>}
-              </h3>
-              <div className="grid grid-cols-5 gap-2">
-                {product.sizes.map((size) => (
-                  <button
-                    key={size}
-                    onClick={() => setSelectedSize(size)}
-                    className={`py-2 px-4 border rounded transition-all ${
-                      selectedSize === size
-                        ? "border-primary bg-primary text-white"
-                        : "border-gray-300 hover:border-gray-400"
-                    }`}
-                  >
-                    {size}
-                  </button>
-                ))}
-              </div>
-              {selectedSize && (
-                <p className="text-sm text-gray-600 mt-2">
-                  Selected: {selectedSize}
-                </p>
-              )}
-            </div>
+           
 
             {/* Quantity */}
             <div>
@@ -263,7 +257,7 @@ export default function ProductDetailPage() {
               </div>
             </div>
 
-            {/* Action Buttons */}
+            {/* Action Buttons - Fixed Order Now functionality */}
             <div className="space-y-3">
               <div className="flex justify-between items-center gap-3">
                 <Button
@@ -302,48 +296,60 @@ export default function ProductDetailPage() {
                         Description
                       </h2>
                       {isDescriptionOpen ? (
-                        <ChevronUp className="h-4 w-4" />
+                        <ChevronUp className="h-5 w-5" />
                       ) : (
-                        <ChevronDown className="h-4 w-4" />
+                        <ChevronDown className="h-5 w-5" />
                       )}
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-4">
-                      <p className="text-gray-600 leading-relaxed">
-                        {product.description}
-                      </p>
+                    <CollapsibleContent>
+                      <div className="px-4 pb-4">
+                        <p className="text-gray-700 leading-relaxed mb-4 text-sm">
+                          {product.description}
+                        </p>
+                      </div>
                     </CollapsibleContent>
                   </Collapsible>
 
                   <Separator />
 
-                  {/* More Info */}
+                  {/* More Information */}
                   <Collapsible
                     open={isMoreInfoOpen}
                     onOpenChange={setIsMoreInfoOpen}
                   >
                     <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
-                      <h2 className="text-lg font-semibold text-primary">
+                      <h2 className="text-lg font-semibold">
                         More Information
                       </h2>
                       {isMoreInfoOpen ? (
-                        <ChevronUp className="h-4 w-4" />
+                        <ChevronUp className="h-5 w-5" />
                       ) : (
-                        <ChevronDown className="h-4 w-4" />
+                        <ChevronDown className="h-5 w-5" />
                       )}
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-4">
-                      <div className="space-y-2 text-sm">
-                        <div className="grid grid-cols-2 gap-2">
-                          <span className="font-medium">Material:</span>
-                          <span>{product.material}</span>
+                    <CollapsibleContent>
+                      <div className="px-4 pb-4 space-y-4">
+                        <div>
+                          <h4 className="font-semibold mb-2 text-sm">
+                            Product Details
+                          </h4>
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            <li>• Premium {product.material} fabric</li>
+                            <li>• Traditional design with modern fit</li>
+                            <li>• Suitable for all occasions</li>
+                            <li>• Easy care and maintenance</li>
+                          </ul>
                         </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <span className="font-medium">Care:</span>
-                          <span>Machine wash cold</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <span className="font-medium">Origin:</span>
-                          <span>Bangladesh</span>
+                        <div>
+                          <h4 className="font-semibold mb-2 text-sm">
+                            Care Instructions
+                          </h4>
+                          <ul className="text-xs text-gray-600 space-y-1">
+                            <li>• Machine wash cold</li>
+                            <li>• Do not bleach</li>
+                            <li>• Tumble dry low</li>
+                            <li>• Iron on medium heat</li>
+                          </ul>
                         </div>
                       </div>
                     </CollapsibleContent>
@@ -351,26 +357,53 @@ export default function ProductDetailPage() {
 
                   <Separator />
 
-                  {/* Returns */}
+                  {/* Returns & Exchanges */}
                   <Collapsible
                     open={isReturnsOpen}
                     onOpenChange={setIsReturnsOpen}
                   >
                     <CollapsibleTrigger className="flex items-center justify-between w-full p-4 text-left hover:bg-gray-50">
-                      <h2 className="text-lg font-semibold text-primary">
-                        Returns & Exchange
+                      <h2 className="text-lg font-semibold">
+                        Returns & Exchanges
                       </h2>
                       {isReturnsOpen ? (
-                        <ChevronUp className="h-4 w-4" />
+                        <ChevronUp className="h-5 w-5" />
                       ) : (
-                        <ChevronDown className="h-4 w-4" />
+                        <ChevronDown className="h-5 w-5" />
                       )}
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="px-4 pb-4">
-                      <p className="text-gray-600 text-sm">
-                        Free returns within 7 days of delivery. Items must be
-                        unworn and in original condition with tags attached.
-                      </p>
+                    <CollapsibleContent>
+                      <div className="px-4 pb-4 space-y-4">
+                        <div>
+                          <h4 className="font-semibold mb-2 text-sm">
+                            Return Policy
+                          </h4>
+                          <p className="text-xs text-gray-600 mb-3">
+                            Items can be returned within 30 days of purchase.
+                            Items must be in original condition with tags attached.
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2 text-sm">
+                            Exchange Policy
+                          </h4>
+                          <p className="text-xs text-gray-600 mb-3">
+                            Exchanges are available within 7 days of purchase.
+                            Color exchanges subject to availability.
+                          </p>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold mb-2 text-sm">
+                            How to Return
+                          </h4>
+                          <ol className="text-xs text-gray-600 space-y-1">
+                            <li>1. Contact our customer service</li>
+                            <li>2. Pack the item securely</li>
+                            <li>3. Use the provided return label</li>
+                            <li>4. Drop off at any courier service</li>
+                          </ol>
+                        </div>
+                      </div>
                     </CollapsibleContent>
                   </Collapsible>
                 </CardContent>
@@ -379,15 +412,24 @@ export default function ProductDetailPage() {
           </div>
         </div>
 
-        {/* Related Products */}
-        <div className="mt-16">
-          <h2 className="text-2xl font-bold mb-8">You might also like</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {relatedProducts.map((relatedProduct) => (
-              <ProductCard key={relatedProduct.id} product={relatedProduct} />
-            ))}
+        <section className="py-20">
+          <div className="container mx-auto px-4">
+            {/* Title with decorative underline */}
+            <div className="mb-8 relative">
+              <h2 className="text-2xl font-bold text-gray-800">
+                More Products
+              </h2>
+              <div className="mt-2 w-36 h-1 rounded-full bg-gradient-to-r from-yellow-500 via-red-500 to-pink-500 shadow-md"></div>
+            </div>
+
+            {/* Product Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {recentProducts.slice(0, 4).map((product, i) => (
+                <ProductCard product={product} key={i} />
+              ))}
+            </div>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   );
