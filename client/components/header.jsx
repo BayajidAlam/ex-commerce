@@ -1,25 +1,41 @@
-"use client"
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
-import { ShoppingCart, Heart, Search, Menu, User, LogOut } from "lucide-react"
-import { useCartStore, useAuthStore } from "@/lib/store"
-import { useState } from "react"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+"use client";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { ShoppingCart, Heart, Search, Menu, User, LogOut } from "lucide-react";
+import { useCartStore, useAuthStore } from "@/lib/store";
+import { useState } from "react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+const navItems = [
+  { label: "Shop all", href: "/products" },
+  { label: "Bag", href: "/products" },
+  { label: "Jewellery", href: "/products" },
+  { label: "Watch", href: "/products" },
+  { label: "Glass", href: "/products" },
+  { label: "About", href: "#" },
+];
 
 export default function Header() {
-  const { getTotalItems } = useCartStore()
-  const { user, isAuthenticated, logout } = useAuthStore()
-  const [searchQuery, setSearchQuery] = useState("")
-  const totalItems = getTotalItems()
+  const { getTotalItems } = useCartStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
+  const [searchQuery, setSearchQuery] = useState("");
+  const totalItems = getTotalItems();
 
   const handleSearch = (e) => {
-    e.preventDefault()
+    e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`
+      window.location.href = `/products?search=${encodeURIComponent(
+        searchQuery
+      )}`;
     }
-  }
+  };
 
   return (
     <header className="border-b bg-white sticky top-0 z-50">
@@ -34,19 +50,20 @@ export default function Header() {
             </Link>
           </div>
 
-          <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/" className="text-sm font-medium hover:text-gray-600">
-              Home
-            </Link>
-            <Link href="/products" className="text-sm font-medium hover:text-gray-600">
-              Products
-            </Link>
-            <Link href="#" className="text-sm font-medium hover:text-gray-600">
-              About
-            </Link>
-          </nav>
-
           <div className="flex items-center space-x-4">
+            <nav className="hidden md:flex items-center space-x-8">
+              {navItems.map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  className="relative text-lg font-medium text-gray-800 group"
+                >
+                  {item.label}
+                  <span className="absolute left-0 -bottom-1 w-0 h-[2px] bg-gray-800 transition-all duration-300 group-hover:w-full"></span>
+                </Link>
+              ))}
+            </nav>
+
             <form onSubmit={handleSearch} className="hidden md:flex">
               <div className="relative">
                 <Input
@@ -56,7 +73,12 @@ export default function Header() {
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-64 pr-10"
                 />
-                <Button type="submit" variant="ghost" size="icon" className="absolute right-0 top-0 h-full">
+                <Button
+                  type="submit"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full"
+                >
                   <Search className="h-4 w-4" />
                 </Button>
               </div>
@@ -106,5 +128,5 @@ export default function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

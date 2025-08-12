@@ -4,6 +4,7 @@ import BannerSlider from "@/components/banner-slider";
 import { ProductCard } from "@/components/ProductCard";
 import Categories from "@/components/UI/Home/Categories";
 import productImage from "../public/products/Aluna 250103.jpg";
+import Link from "next/link";
 
 export default function HomePage() {
   const seasonalProducts = [
@@ -84,6 +85,41 @@ export default function HomePage() {
     },
   ];
 
+  const products = [
+    {
+      title: "Ladies Bags",
+      description:
+        "Stylish and functional bags designed for modern, confident women",
+      imgSrc: "/path-to-your-image1.jpg",
+      buttonActive: true,
+      link: "/",
+    },
+    {
+      title: "Jewelry",
+      description:
+        "Elegant jewelry pieces to elevate your every-day and special looks.",
+      imgSrc: "/path-to-your-image2.jpg",
+      buttonActive: false,
+      link: "/",
+    },
+    {
+      title: "Sunglasses",
+      description:
+        "Designer-inspired sunglasses crafted for bold expression and flawless protection.",
+      imgSrc: "/path-to-your-image3.jpg",
+      buttonActive: false,
+      link: "/",
+    },
+    {
+      title: "Watches",
+      description:
+        "Refined and reliable watches made to complement every graceful moment.",
+      imgSrc: "/path-to-your-image4.jpg",
+      buttonActive: false,
+      link: "/",
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
@@ -93,22 +129,39 @@ export default function HomePage() {
       <BannerSlider />
 
       {/* Hero Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <Categories />
-          <div className="relative h-96 rounded-lg overflow-hidden mb-8">
-            <Image
-              src="/hero-image.png"
-              alt="ARJO Collection"
-              fill
-              className="object-cover"
-            />
-          </div>
-        </div>{" "}
+      <section className="max-w-7xl mx-auto px-6 py-40">
+        <div className="text-center mb-10 space-y-5">
+          <h1 className="text-3xl font-bold">Find your flow</h1>
+          <p className="text-gray-700 text-sm">
+            Explore styles curated for every version of you
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
+          {products.map(
+            ({ title, description, imgSrc, buttonActive, link }) => (
+              <Link
+                key={title}
+                href={link || "#"}
+                className="flex flex-col space-y-4 rounded-lg overflow-hidden cursor-pointer"
+              >
+                <div className="rounded-lg overflow-hidden p-3">
+                  <img
+                    src={"https://i.ibb.co.com/9HXS7Q16/image.png"}
+                    alt={title}
+                    className="w-full h-88 object-cover rounded-lg"
+                  />
+                </div>
+                <div className="px-1">
+                  <h3 className="font-bold text-lg text-center">{title}</h3>
+                </div>
+              </Link>
+            )
+          )}
+        </div>
       </section>
 
       {/* Seasonal Wear Section */}
-      <section className="py-8 bg-gray-50">
+      <section className="py-20 bg-gray-300">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-bold text-center mb-8">Popular Item</h2>
 
@@ -139,76 +192,51 @@ export default function HomePage() {
             </div>
           </div> */}
         </div>
+
+        <div className="text-center">
+          {" "}
+          <button className="text-center text-lg bg-white px-10 py-2 rounded-md">
+            See All
+          </button>
+        </div>
       </section>
 
+      {/* Category */}
+
+      <Categories />
+
+    <section className="w-full">
+  <div className="grid grid-cols-1 md:grid-cols-2">
+    {/* First Image */}
+    <div className="relative w-full h-[500px] overflow-hidden">
+      <Image
+        src="https://i.ibb.co.com/PvcyVZ2D/image.png"
+        alt="First"
+        fill
+        className="object-cover hover:scale-105 transition-transform duration-500"
+      />
+    </div>
+
+    {/* Second Image */}
+    <div className="relative w-full h-[500px] overflow-hidden ">
+      <Image
+        src="https://i.ibb.co.com/wF9t4QwY/image.png"
+        alt="Second"
+        fill
+        className="object-cover hover:scale-105 transition-transform duration-500"
+      />
+    </div>
+  </div>
+</section>
+
+
       {/* Recent Products */}
-      <section className="py-8">
+      <section className="py-40">
         <div className="container mx-auto px-4">
           <div className="mb-8">
             <h2 className="text-2xl font-bold text-gray-800">Bag</h2>
             <div className="mt-2 w-36 h-1 rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-red-500 shadow-md"></div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {recentProducts.slice(0, 4).map((product, i) => (
-              <ProductCard product={product} key={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">Jewellery</h2>
-            <div className="mt-2 w-36 h-1 rounded-full bg-gradient-to-r from-yellow-400 via-rose-400 to-pink-500 shadow-md"></div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {recentProducts.slice(0, 4).map((product, i) => (
-              <ProductCard product={product} key={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">Watch</h2>
-            <div className="mt-2 w-36 h-1 rounded-full bg-gradient-to-r from-blue-400 via-cyan-400 to-teal-500 shadow-md"></div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {recentProducts.slice(0, 4).map((product, i) => (
-              <ProductCard product={product} key={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">Glass</h2>
-            <div className="mt-2 w-36 h-1 rounded-full bg-gradient-to-r from-purple-400 via-indigo-400 to-blue-500 shadow-md"></div>
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {recentProducts.slice(0, 4).map((product, i) => (
-              <ProductCard product={product} key={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-8">
-        <div className="container mx-auto px-4">
-          {/* Title with decorative underline */}
-          <div className="mb-8 relative">
-            <h2 className="text-2xl font-bold text-gray-800">
-              RECENT ARRIVALS
-            </h2>
-            <div className="mt-2 w-36 h-1 rounded-full bg-gradient-to-r from-yellow-500 via-red-500 to-pink-500 shadow-md"></div>
-          </div>
-
-          {/* Product Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {recentProducts.slice(0, 4).map((product, i) => (
               <ProductCard product={product} key={i} />
