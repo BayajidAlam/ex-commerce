@@ -50,8 +50,8 @@ export default function Header() {
             </Link>
           </div>
 
-          <div className="flex items-center space-x-4">
-            <nav className="hidden md:flex items-center space-x-8">
+          <div className="flex items-center space-x-8">
+            <nav className="hidden md:flex items-center space-x-6">
               {navItems.map((item) => (
                 <Link
                   key={item.label}
@@ -71,7 +71,7 @@ export default function Header() {
                   placeholder="Search products..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-64 pr-10"
+                  className="w-40 pr-10"
                 />
                 <Button
                   type="submit"
@@ -79,7 +79,7 @@ export default function Header() {
                   size="icon"
                   className="absolute right-0 top-0 h-full"
                 >
-                  <Search className="h-4 w-4" />
+                  <Search className="h-4 w-20" />
                 </Button>
               </div>
             </form>

@@ -131,7 +131,7 @@ export default function HomePage() {
       {/* Hero Section */}
       <section className="max-w-7xl mx-auto px-6 py-40">
         <div className="text-center mb-10 space-y-5">
-          <h1 className="text-3xl font-bold">Find your flow</h1>
+          <h1 className="text-4xl font-bold">Find your flow</h1>
           <p className="text-gray-700 text-sm">
             Explore styles curated for every version of you
           </p>
@@ -163,7 +163,7 @@ export default function HomePage() {
       {/* Seasonal Wear Section */}
       <section className="py-20 bg-gray-300">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-bold text-center mb-8">Popular Item</h2>
+          <h2 className="text-4xl font-bold text-center mb-8">Loved by you</h2>
 
           {/* Product Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
@@ -234,7 +234,7 @@ export default function HomePage() {
       <section className="py-40">
         <div className="container mx-auto px-4">
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-gray-800">Bag</h2>
+            <h2 className="text-4xl font-bold text-gray-800">Recently Added</h2>
             <div className="mt-2 w-36 h-1 rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-red-500 shadow-md"></div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">

@@ -87,14 +87,9 @@ function CategorySection({
   return (
     <section className="py-20">
       <div className="container mx-auto px-4">
-        {/* Section title with underline */}
-        <div className="mb-8 text-left">
-          <h2 className="text-2xl font-bold text-gray-1200">{title}</h2>
-          <div className="mt-2 w-36 h-1 rounded-full bg-gradient-to-r from-yellow-400 via-rose-400 to-pink-500 shadow-md"></div>
-        </div>
 
         {/* Product grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
           {items.map((product, i) => (
             <Link
               key={i}
