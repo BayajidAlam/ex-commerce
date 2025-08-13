@@ -208,7 +208,7 @@ export default function HomePage() {
     <section className="w-full">
   <div className="grid grid-cols-1 md:grid-cols-2">
     {/* First Image */}
-    <div className="relative w-full h-[500px] overflow-hidden">
+    <div className="relative w-full h-[700px] overflow-hidden">
       <Image
         src="https://i.ibb.co.com/PvcyVZ2D/image.png"
         alt="First"
@@ -218,7 +218,7 @@ export default function HomePage() {
     </div>
 
     {/* Second Image */}
-    <div className="relative w-full h-[500px] overflow-hidden ">
+    <div className="relative w-full h-[700px] overflow-hidden ">
       <Image
         src="https://i.ibb.co.com/wF9t4QwY/image.png"
         alt="Second"

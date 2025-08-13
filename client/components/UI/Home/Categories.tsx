@@ -25,37 +25,43 @@ const products = {
 export default function Categories() {
   return (
     <div className="text-center py-32">
-
       <Tabs defaultValue="bags" className="w-full">
         {/* Category Selector */}
         <TabsList className="flex justify-center items-center gap-10 bg-transparent p-0">
           <TabsTrigger
             value="bags"
-            className="flex flex-col items-center gap-2 bg-transparent data-[state=active]:text-pink-600"
+            className="flex flex-col items-center gap-2 p-2 rounded-lg transition-all w-full md:w-auto
+                       data-[state=active]:bg-pink-100 data-[state=active]:text-pink-600"
           >
-            <Image src={categoryImage1} alt="Bags" height={120} width={120} />
-            <span className="text-sm font-medium">Bags</span>
+            <Image src={categoryImage1} alt="Bags" height={120} width={120} className="rounded-lg" />
+            <span className="text-sm font-medium">{/* name hidden */}</span>
           </TabsTrigger>
+
           <TabsTrigger
             value="jewelry"
-            className="flex flex-col items-center gap-2 bg-transparent data-[state=active]:text-pink-600"
+            className="flex flex-col items-center gap-2 p-2 rounded-lg transition-all w-full md:w-auto
+                       data-[state=active]:bg-pink-100 data-[state=active]:text-pink-600"
           >
-            <Image src={categoryImage2} alt="Jewelry" height={120} width={120} />
-            <span className="text-sm font-medium">Jewelry</span>
+            <Image src={categoryImage2} alt="Jewelry" height={120} width={120} className="rounded-lg" />
+            <span className="text-sm font-medium">{/* name hidden */}</span>
           </TabsTrigger>
+
           <TabsTrigger
             value="sunglasses"
-            className="flex flex-col items-center gap-2 bg-transparent data-[state=active]:text-pink-600"
+            className="flex flex-col items-center gap-2 p-2 rounded-lg transition-all w-full md:w-auto
+                       data-[state=active]:bg-pink-100 data-[state=active]:text-pink-600"
           >
-            <Image src={categoryImage3} alt="Sunglasses" height={120} width={120} />
-            <span className="text-sm font-medium">Sunglasses</span>
+            <Image src={categoryImage3} alt="Sunglasses" height={120} width={120} className="rounded-lg" />
+            <span className="text-sm font-medium">{/* name hidden */}</span>
           </TabsTrigger>
+
           <TabsTrigger
             value="watches"
-            className="flex flex-col items-center gap-2 bg-transparent data-[state=active]:text-pink-600"
+            className="flex flex-col items-center gap-2 p-2 rounded-lg transition-all w-full md:w-auto
+                       data-[state=active]:bg-pink-100 data-[state=active]:text-pink-600"
           >
-            <Image src={categoryImage4} alt="Watches" height={120} width={120} />
-            <span className="text-sm font-medium">Watches</span>
+            <Image src={categoryImage4} alt="Watches" height={120} width={120} className="rounded-lg" />
+            <span className="text-sm font-medium">{/* name hidden */}</span>
           </TabsTrigger>
         </TabsList>
 
@@ -87,15 +93,10 @@ function CategorySection({
   return (
     <section className="py-20">
       <div className="container mx-auto px-4">
-
         {/* Product grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
           {items.map((product, i) => (
-            <Link
-              key={i}
-              href={`/products/${i}`}
-              className="block group"
-            >
+            <Link key={i} href={`/products/${i}`} className="block group">
               <div className="overflow-hidden rounded-lg shadow-sm group-hover:shadow-lg transition-shadow">
                 <Image
                   src={product.img}
@@ -115,4 +116,3 @@ function CategorySection({
     </section>
   );
 }
-
