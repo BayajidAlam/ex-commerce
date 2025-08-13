@@ -129,8 +129,8 @@ export default function HomePage() {
       <BannerSlider />
 
       {/* Hero Section */}
-      <section className="max-w-7xl mx-auto px-6 py-40">
-        <div className="text-center mb-10 space-y-5">
+      <section className="max-w-7xl mx-auto px-6 py-32">
+        <div className="text-center mb-10 space-y-2">
           <h1 className="text-4xl font-bold">Find your flow</h1>
           <p className="text-gray-700 text-sm">
             Explore styles curated for every version of you

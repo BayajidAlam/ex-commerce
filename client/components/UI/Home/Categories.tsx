@@ -28,56 +28,37 @@ export default function Categories() {
       <Tabs defaultValue="bags" className="w-full">
         {/* Category Selector */}
         <TabsList className="flex justify-center items-center gap-10 bg-transparent p-0">
-          <TabsTrigger
-            value="bags"
-            className="flex flex-col items-center gap-2 p-2 rounded-lg transition-all w-full md:w-auto
-                       data-[state=active]:bg-pink-100 data-[state=active]:text-pink-600"
-          >
-            <Image src={categoryImage1} alt="Bags" height={120} width={120} className="rounded-lg" />
-            <span className="text-sm font-medium">{/* name hidden */}</span>
-          </TabsTrigger>
-
-          <TabsTrigger
-            value="jewelry"
-            className="flex flex-col items-center gap-2 p-2 rounded-lg transition-all w-full md:w-auto
-                       data-[state=active]:bg-pink-100 data-[state=active]:text-pink-600"
-          >
-            <Image src={categoryImage2} alt="Jewelry" height={120} width={120} className="rounded-lg" />
-            <span className="text-sm font-medium">{/* name hidden */}</span>
-          </TabsTrigger>
-
-          <TabsTrigger
-            value="sunglasses"
-            className="flex flex-col items-center gap-2 p-2 rounded-lg transition-all w-full md:w-auto
-                       data-[state=active]:bg-pink-100 data-[state=active]:text-pink-600"
-          >
-            <Image src={categoryImage3} alt="Sunglasses" height={120} width={120} className="rounded-lg" />
-            <span className="text-sm font-medium">{/* name hidden */}</span>
-          </TabsTrigger>
-
-          <TabsTrigger
-            value="watches"
-            className="flex flex-col items-center gap-2 p-2 rounded-lg transition-all w-full md:w-auto
-                       data-[state=active]:bg-pink-100 data-[state=active]:text-pink-600"
-          >
-            <Image src={categoryImage4} alt="Watches" height={120} width={120} className="rounded-lg" />
-            <span className="text-sm font-medium">{/* name hidden */}</span>
-          </TabsTrigger>
+          {[
+            { value: "bags", img: categoryImage1 },
+            { value: "jewelry", img: categoryImage2 },
+            { value: "sunglasses", img: categoryImage3 },
+            { value: "watches", img: categoryImage4 },
+          ].map((cat) => (
+            <TabsTrigger
+              key={cat.value}
+              value={cat.value}
+              className="flex items-center justify-center w-32 h-32 rounded-full
+                         transition-all data-[state=active]:bg-pink-100 data-[state=active]:text-pink-600"
+            >
+              <div className="w-20 h-20 rounded-full overflow-hidden">
+                <Image
+                  src={cat.img}
+                  alt={cat.value}
+                  width={80}
+                  height={80}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            </TabsTrigger>
+          ))}
         </TabsList>
 
         {/* Products Section */}
-        <TabsContent value="bags">
-          <CategorySection title="Bags" items={products.bags} />
-        </TabsContent>
-        <TabsContent value="jewelry">
-          <CategorySection title="Jewelry" items={products.jewelry} />
-        </TabsContent>
-        <TabsContent value="sunglasses">
-          <CategorySection title="Sunglasses" items={products.sunglasses} />
-        </TabsContent>
-        <TabsContent value="watches">
-          <CategorySection title="Watches" items={products.watches} />
-        </TabsContent>
+        {Object.entries(products).map(([key, items]) => (
+          <TabsContent key={key} value={key}>
+            <CategorySection title={key} items={items} />
+          </TabsContent>
+        ))}
       </Tabs>
     </div>
   );
@@ -93,7 +74,6 @@ function CategorySection({
   return (
     <section className="py-20">
       <div className="container mx-auto px-4">
-        {/* Product grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-8">
           {items.map((product, i) => (
             <Link key={i} href={`/products/${i}`} className="block group">
