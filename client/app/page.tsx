@@ -1,10 +1,9 @@
 import Image from "next/image";
-import Header from "@/components/header";
 import BannerSlider from "@/components/banner-slider";
 import { ProductCard } from "@/components/ProductCard";
 import Categories from "@/components/UI/Home/Categories";
-import productImage from "../public/products/Aluna 250103.jpg";
 import Link from "next/link";
+import Header from "@/components/header";
 
 export default function HomePage() {
   const seasonalProducts = [

@@ -67,9 +67,32 @@ export const useCartStore = create(
   ),
 )
 
-export const useAuthStore = create((set) => ({
+// Updated Auth Store - syncs with server
+export const useAuthStore = create((set, get) => ({
   user: null,
   isAuthenticated: false,
-  login: (userData) => set({ user: userData, isAuthenticated: true }),
-  logout: () => set({ user: null, isAuthenticated: false }),
+  
+  // Set user (called from server sync)
+  setUser: (userData) => set({ 
+    user: userData, 
+    isAuthenticated: true 
+  }),
+  
+  // Clear user
+  clearUser: () => set({ 
+    user: null, 
+    isAuthenticated: false 
+  }),
+  
+  // Legacy login method for client-side pages that still need it
+  login: (userData) => set({ 
+    user: userData, 
+    isAuthenticated: true 
+  }),
+  
+  // Legacy logout method
+  logout: () => set({ 
+    user: null, 
+    isAuthenticated: false 
+  }),
 }))
