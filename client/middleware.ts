@@ -7,8 +7,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 const protectedRoutes = [
   '/dashboard',
   '/profile',
-  '/orders',
-  '/wishlist'
+  // "/products"
 ]
 
 // Auth routes that should redirect if already authenticated
