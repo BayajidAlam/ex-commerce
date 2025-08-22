@@ -17,6 +17,7 @@ import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useCartStore } from '@/lib/store'
 import { ProductCard } from '@/components/ProductCard'
 import Link from 'next/link'
+import { toast } from 'sonner'
 
 interface ProductsClientProps {
   initialProducts: any[]
@@ -136,7 +137,25 @@ export function ProductsClient({
 
   // Handle add to cart
   const handleAddToCart = (product: any) => {
-    addItem(product, 'default', 'M', 1) // Default values for color and size
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      category: product.category || "general",
+      selectedColor: "default",
+      selectedSize: "default", 
+      quantity: 1,
+      itemKey: `${product.id}-default-default`,
+    };
+
+    console.log("🎯 Adding to cart from ProductClient:", cartItem);
+    addItem(cartItem, 'default', 'default', 1);
+    
+    toast.success(`🛒 ${product.name} added to cart!`, {
+      description: "1 item added successfully",
+      className: "border-green-200 bg-green-50",
+    });
   }
 
   // Update URL with new filters
@@ -403,17 +422,13 @@ export function ProductsClient({
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                   {products.map((product) => (
-                    <Link href={`/products/${product.id}`} key={product.id}>
-                      <ProductCard
-                        product={product}
-                        showCategory={true}
-                        showAddToCart={true}
-                        onAddToCart={(e) => {
-                          e.preventDefault()
-                          handleAddToCart(product)
-                        }}
-                      />
-                    </Link>
+                    <ProductCard
+                      key={product.id}
+                      product={product}
+                      showCategory={true}
+                      showAddToCart={true}
+                      onAddToCart={handleAddToCart}
+                    />
                   ))}
                 </div>
 
@@ -434,18 +449,6 @@ export function ProductsClient({
                   </div>
                 )}
 
-                {/* Debug Pagination Info */}
-                <div className="mt-8 p-4 bg-gray-100 rounded-lg text-sm">
-                  <h4 className="font-semibold mb-2">Debug - Pagination Info:</h4>
-                  <pre className="text-xs">
-                    {JSON.stringify(pagination, null, 2)}
-                  </pre>
-                  <p className="mt-2">
-                    <strong>Products shown:</strong> {products.length} | 
-                    <strong> Total:</strong> {pagination.total} | 
-                    <strong> Pages:</strong> {pagination.pages}
-                  </p>
-                </div>
 
                 {/* Pagination - Always show */}
                 <div className="flex flex-col items-center space-y-4 mt-12 pb-8 border-t pt-8">
@@ -570,12 +573,7 @@ export function ProductsClient({
                       Next
                       <ChevronRight className="h-4 w-4 ml-1" />
                     </Button>
-                  </div>
-
-                  {/* Page Size Selector - Always show */}
-                  <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600">Products per page:</span>
-                    <Select
+                     <Select
                       value={pagination.limit.toString()}
                       onValueChange={(value) => handlePageSizeChange(parseInt(value))}
                     >
@@ -592,9 +590,9 @@ export function ProductsClient({
                     </Select>
                   </div>
 
+
                   {/* Current Page Indicator */}
                   <div className="text-xs text-gray-500">
-                    Page {pagination.page} of {Math.max(1, pagination.pages)}
                     {pagination.page > pagination.pages && pagination.pages > 0 && (
                       <span className="text-orange-600 ml-2">(No data on this page)</span>
                     )}

@@ -143,23 +143,37 @@ export async function getCategories() {
   }
 }
 
-// Transform backend product to frontend format
+// Transform backend product to frontend format - FIXED VERSION
 export function transformProduct(product: Product) {
+  // Extract image URLs safely
+  const imageUrls = product.images && product.images.length > 0 
+    ? product.images.map((img) => img.url).filter(url => url) // Remove any undefined URLs
+    : [];
+
+  // Get main image (first valid image or placeholder)
+  const mainImage = imageUrls.length > 0 ? imageUrls[0] : "/placeholder.svg";
+
+  // Ensure we have at least one image for the gallery
+  const galleryImages = imageUrls.length > 0 ? imageUrls : ["/placeholder.svg"];
+
   return {
     id: product._id,
     name: product.name,
-    price: `৳${product.price.toLocaleString()}`, // Direct from backend, no calculation
+    price: `৳${product.price.toLocaleString()}`,
     category: product.category,
-    image: product.images?.[0]?.url || "/placeholder.svg",
-    images:
-      product.images?.length > 0
-        ? product.images.map((img) => img.url)
-        : [product.images?.[0]?.url || "/placeholder.svg"],
+    image: mainImage, // Single main image
+    images: galleryImages, // Array of image URLs for gallery
     colors: product.colors || [],
     sizes: product.sizes || [],
     description: product.description,
     inStock: product.inStock,
     seller: product.seller,
-    material: "Premium Quality", // Default only if backend doesn't provide
+    material: "Premium Quality",
+    // Add additional fields that might be useful
+    originalPrice: product.originalPrice || null,
+    discount: product.discount || null,
+    dimensions: product.dimensions || null,
+    sku: product.sku,
+    featured: product.featured || false,
   };
 }

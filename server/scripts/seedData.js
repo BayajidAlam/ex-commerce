@@ -56,7 +56,8 @@ const seedData = async () => {
         sku: 'ALN-CCS-001',
         seller: createdSellers[0]._id,
         featured: true,
-        tags: ['cotton', 'casual', 'comfortable']
+        tags: ['cotton', 'casual', 'comfortable'],
+        inStock: true
       },
       {
         name: 'Formal White Shirt',
@@ -74,7 +75,8 @@ const seedData = async () => {
         sku: 'ALN-FWS-002',
         seller: createdSellers[0]._id,
         featured: true,
-        tags: ['formal', 'business', 'white']
+        tags: ['formal', 'business', 'white'],
+        inStock: true
       },
       {
         name: 'Denim Casual Shirt',
@@ -90,7 +92,8 @@ const seedData = async () => {
         colors: ['Light Blue', 'Dark Blue'],
         sku: 'ALN-DCS-003',
         seller: createdSellers[1]._id,
-        tags: ['denim', 'casual', 'trendy']
+        tags: ['denim', 'casual', 'trendy'],
+        inStock: true
       },
       {
         name: 'Black Kurta',
@@ -108,7 +111,8 @@ const seedData = async () => {
         sku: 'ALN-BK-004',
         seller: createdSellers[0]._id,
         featured: true,
-        tags: ['traditional', 'kurta', 'festival']
+        tags: ['traditional', 'kurta', 'festival'],
+        inStock: true
       },
       {
         name: 'White Panjabi',
@@ -124,7 +128,8 @@ const seedData = async () => {
         colors: ['White', 'Cream'],
         sku: 'ALN-WP-005',
         seller: createdSellers[1]._id,
-        tags: ['traditional', 'panjabi', 'elegant']
+        tags: ['traditional', 'panjabi', 'elegant'],
+        inStock: true
       },
       {
         name: 'Navy Kurta',

@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ShoppingCart } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 interface Product {
   id: number;
@@ -23,43 +24,57 @@ interface ProductCardProps {
 export function ProductCard({
   product,
   showCategory = false,
-  showAddToCart = false,
+  showAddToCart = true,
   onAddToCart,
 }: ProductCardProps) {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent navigation when clicking add to cart
+    e.stopPropagation(); // Stop event bubbling
+    if (onAddToCart) {
+      onAddToCart(product);
+    }
+  };
+
   return (
-    <Card className="group cursor-pointer hover:shadow-lg transition-shadow">
+    <Card className="group hover:shadow-lg transition-shadow">
       <CardContent className="p-0">
         {/* Square Image Container */}
-        <div className="relative aspect-square overflow-hidden rounded-t-lg">
-          <Image
-            src={product.image || "/placeholder.svg"}
-            alt={product.name}
-            fill
-            className="object-cover group-hover:scale-105 transition-transform duration-300"
-          />
-          {showAddToCart && onAddToCart && (
-            <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-center justify-center">
-              <Button
-                onClick={() => onAddToCart(product)}
-                className="opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-              >
-                <ShoppingCart className="mr-2 h-4 w-4" />
-                Add to Cart
-              </Button>
-            </div>
-          )}
-        </div>
+        <Link href={`/products/${product.id}`}>
+          <div className="relative aspect-square overflow-hidden rounded-t-lg cursor-pointer">
+            <Image
+              src={product.image || "/placeholder.svg"}
+              alt={product.name}
+              fill
+              className="object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+          </div>
+        </Link>
 
         {/* Product Info */}
         <div className="p-4">
-          <h3 className="font-medium text-sm mb-2 line-clamp-2">
-            {product.name}
-          </h3>
-          <p className="text-lg font-bold text-primary">{product.price}</p>
+          <Link href={`/products/${product.id}`}>
+            <h3 className="font-medium text-sm mb-2 line-clamp-2 cursor-pointer hover:text-blue-600 transition-colors">
+              {product.name}
+            </h3>
+          </Link>
+          <p className="text-lg font-bold text-primary mb-3">{product.price}</p>
+          
           {showCategory && product.category && (
-            <Badge variant="secondary" className="mt-2 capitalize">
+            <Badge variant="secondary" className="mb-3 capitalize">
               {product.category}
             </Badge>
+          )}
+
+          {showAddToCart && (
+            <Button
+              onClick={handleAddToCart}
+              variant="outline"
+              size="sm"
+              className="w-full"
+            >
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              Add to Cart
+            </Button>
           )}
         </div>
       </CardContent>

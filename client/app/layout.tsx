@@ -4,6 +4,7 @@ import { GeistMono } from "geist/font/mono";
 import { getCurrentUser } from "@/lib/auth";
 import "./globals.css";
 import { ClientAuthSync } from "@/components/ClientAuthSync";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "Aluna",
@@ -32,6 +33,7 @@ html {
       <body>
         {/* This small client component syncs auth state without making everything client-side */}
         <ClientAuthSync user={user} />
+        <Toaster richColors position="top-right" />
         {/* All your pages remain server-side rendered! */}
         {children}
       </body>

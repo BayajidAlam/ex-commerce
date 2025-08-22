@@ -16,15 +16,17 @@ import { logoutAction } from "@/lib/actions/auth"
 import Link from "next/link"
 
 export default function Header() {
-  const { getTotalItems } = useCartStore()
+  const { items, getTotalItems } = useCartStore()
   const { user, isAuthenticated } = useAuthStore() // Get user from Zustand store
-  const [totalItems, setTotalItems] = useState(0)
   const [searchQuery, setSearchQuery] = useState("")
 
-  // Update cart count on client side
+  // Calculate total items directly from items array - this will update when items change
+  const totalItems = items.reduce((total: number, item: any) => total + item.quantity, 0)
+  
+  // Debug cart updates
   useEffect(() => {
-    setTotalItems(getTotalItems())
-  }, [getTotalItems])
+    console.log("🛒 Cart items updated in header:", items.length, "items, total quantity:", totalItems);
+  }, [items, totalItems])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()

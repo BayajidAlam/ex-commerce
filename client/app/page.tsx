@@ -1,11 +1,37 @@
+"use client";
+
 import Image from "next/image";
 import BannerSlider from "@/components/banner-slider";
 import { ProductCard } from "@/components/ProductCard";
 import Categories from "@/components/UI/Home/Categories";
 import Link from "next/link";
 import Header from "@/components/header";
+import { useCartStore } from "@/lib/store";
+import { toast } from "sonner";
 
 export default function HomePage() {
+  const { addItem } = useCartStore();
+
+  const handleAddToCart = (product: any) => {
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      category: product.category || "general",
+      selectedColor: "default",
+      selectedSize: "default",
+      quantity: 1,
+      itemKey: `${product.id}-default-default`,
+    };
+
+    addItem(cartItem, "default", "default", 1);
+    
+    toast.success(`🛒 ${product.name} added to cart!`, {
+      description: "1 item added successfully",
+      className: "border-green-200 bg-green-50",
+    });
+  };
   const seasonalProducts = [
     {
       id: 9,
@@ -167,7 +193,12 @@ export default function HomePage() {
           {/* Product Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             {seasonalProducts.map((product, i) => (
-              <ProductCard product={product} key={i} />
+              <ProductCard 
+                product={product} 
+                key={i} 
+                onAddToCart={handleAddToCart}
+                showAddToCart={true}
+              />
             ))}
           </div>
 
@@ -238,7 +269,12 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {recentProducts.slice(0, 4).map((product, i) => (
-              <ProductCard product={product} key={i} />
+              <ProductCard 
+                product={product} 
+                key={i} 
+                onAddToCart={handleAddToCart}
+                showAddToCart={true}
+              />
             ))}
           </div>
         </div>
