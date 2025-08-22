@@ -94,12 +94,12 @@ export function ProductsClient({
     }
   }
 
-  // Transform backend product to frontend format
+  // Transform backend product to frontend format (consistent with API utils)
   const transformProduct = (product: any) => {
     return {
       id: product._id,
       name: product.name,
-      price: `৳${product.price.toLocaleString()}`,
+      price: `৳${product.price.toLocaleString()}`, // Exact same formatting as API utils
       category: product.category,
       image: product.images?.[0]?.url || '/placeholder.svg',
       description: product.description,
@@ -434,10 +434,33 @@ export function ProductsClient({
                   </div>
                 )}
 
+                {/* Debug Pagination Info */}
+                <div className="mt-8 p-4 bg-gray-100 rounded-lg text-sm">
+                  <h4 className="font-semibold mb-2">Debug - Pagination Info:</h4>
+                  <pre className="text-xs">
+                    {JSON.stringify(pagination, null, 2)}
+                  </pre>
+                  <p className="mt-2">
+                    <strong>Products shown:</strong> {products.length} | 
+                    <strong> Total:</strong> {pagination.total} | 
+                    <strong> Pages:</strong> {pagination.pages}
+                  </p>
+                </div>
 
                 {/* Pagination - Always show */}
                 <div className="flex flex-col items-center space-y-4 mt-12 pb-8 border-t pt-8">
-                  
+                  {/* Pagination Info */}
+                  <div className="text-sm text-gray-600">
+                    {pagination.total > 0 ? (
+                      <>
+                        Showing {((pagination.page - 1) * pagination.limit) + 1} to{' '}
+                        {Math.min(pagination.page * pagination.limit, pagination.total)} of{' '}
+                        {pagination.total} products
+                      </>
+                    ) : (
+                      'No products found'
+                    )}
+                  </div>
 
                   {/* Pagination Controls - Always show */}
                   <div className="flex items-center space-x-2">
@@ -560,11 +583,11 @@ export function ProductsClient({
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="2">2</SelectItem>
-                        <SelectItem value="5">5</SelectItem>
-                        <SelectItem value="10">10</SelectItem>
-                        <SelectItem value="20">20</SelectItem>
-                        <SelectItem value="50">50</SelectItem>
+                        <SelectItem value="6">6</SelectItem>
+                        <SelectItem value="12">12</SelectItem>
+                        <SelectItem value="18">18</SelectItem>
+                        <SelectItem value="24">24</SelectItem>
+                        <SelectItem value="48">48</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>

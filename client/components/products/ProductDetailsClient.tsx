@@ -40,14 +40,14 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
 
   // Add color validation for both buttons
   const handleAddToCart = () => {
-    if (!selectedColor) {
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
       alert('Please select a color')
       return
     }
 
     const cartItem = {
       ...product,
-      selectedColor,
+      selectedColor: selectedColor || 'default',
       quantity,
     }
 
@@ -60,14 +60,14 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
 
   // Handle Order Now - goes directly to checkout
   const handleOrderNow = () => {
-    if (!selectedColor) {
+    if (product.colors && product.colors.length > 0 && !selectedColor) {
       alert('Please select a color')
       return
     }
 
     const cartItem = {
       ...product,
-      selectedColor,
+      selectedColor: selectedColor || 'default',
       quantity,
     }
 
@@ -79,6 +79,7 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
     router.push('/checkout')
   }
 
+  // Mock related products (you can replace this with real related products from backend)
   const recentProducts = [
     {
       id: 21,
@@ -120,10 +121,6 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
                 className="object-cover"
                 priority
               />
-              {/* Debug info - remove this later */}
-              <div className="absolute top-2 left-2 bg-black bg-opacity-50 text-white p-2 rounded text-xs">
-                Image {selectedImage + 1} of {product.images?.length || 1}
-              </div>
             </div>
 
             {/* Thumbnails - only show if more than 1 image */}
@@ -163,11 +160,15 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
                   {product.price}
                 </span>
                 {product.originalPrice && (
-                  <span className="text-xl text-gray-500 line-through">
-                    {product.originalPrice}
-                  </span>
+                  <>
+                    <span className="text-xl text-gray-500 line-through">
+                      {product.originalPrice}
+                    </span>
+                    {product.discount && (
+                      <Badge variant="destructive">Save {product.discount}</Badge>
+                    )}
+                  </>
                 )}
-                <Badge variant="destructive">Save ৳500</Badge>
               </div>
               <p className="text-gray-600 mb-4">Material: {product.material || 'Premium Quality'}</p>
 
@@ -178,7 +179,7 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
               </div>
             </div>
 
-            {/* Dimensions Display - Replaced Size Selection */}
+            {/* Dimensions Display */}
             <div>
               <h3 className="font-semibold mb-3 flex items-center gap-2">
                 <Ruler className="h-4 w-4" />
@@ -194,30 +195,32 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
               </div>
             </div>
 
-            {/* Color Selection - Made Required */}
-            <div>
-              <h3 className="font-semibold mb-3">
-                Color <span className="text-red-500">*</span>
-              </h3>
-              <div className="flex space-x-3">
-                {product.colors && product.colors.map((color: any) => {
-                  const colorName = typeof color === 'string' ? color : color.name
-                  return (
-                    <button
-                      key={colorName}
-                      onClick={() => setSelectedColor(colorName)}
-                      className={`py-2 px-4 border rounded transition-all ${
-                        selectedColor === colorName
-                          ? 'border-primary bg-primary text-white'
-                          : 'border-gray-300 hover:border-gray-400'
-                      }`}
-                    >
-                      {colorName}
-                    </button>
-                  )
-                })}
+            {/* Color Selection - Only show if colors exist */}
+            {product.colors && product.colors.length > 0 && (
+              <div>
+                <h3 className="font-semibold mb-3">
+                  Color <span className="text-red-500">*</span>
+                </h3>
+                <div className="flex space-x-3">
+                  {product.colors.map((color: any) => {
+                    const colorName = typeof color === 'string' ? color : color.name || color
+                    return (
+                      <button
+                        key={colorName}
+                        onClick={() => setSelectedColor(colorName)}
+                        className={`py-2 px-4 border rounded transition-all ${
+                          selectedColor === colorName
+                            ? 'border-primary bg-primary text-white'
+                            : 'border-gray-300 hover:border-gray-400'
+                        }`}
+                      >
+                        {colorName}
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Quantity */}
             <div>
@@ -243,7 +246,7 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
               </div>
             </div>
 
-            {/* Action Buttons - Fixed Order Now functionality */}
+            {/* Action Buttons */}
             <div className="space-y-3">
               <div className="flex justify-between items-center gap-3">
                 <Button

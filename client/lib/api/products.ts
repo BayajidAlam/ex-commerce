@@ -148,22 +148,18 @@ export function transformProduct(product: Product) {
   return {
     id: product._id,
     name: product.name,
-    price: `৳${product.price.toLocaleString()}`,
-    originalPrice:
-      product.price > 0
-        ? `৳${(product.price * 1.2).toLocaleString()}`
-        : undefined,
+    price: `৳${product.price.toLocaleString()}`, // Direct from backend, no calculation
     category: product.category,
     image: product.images?.[0]?.url || "/placeholder.svg",
     images:
       product.images?.length > 0
         ? product.images.map((img) => img.url)
-        : [product.images?.[0]?.url || "/placeholder.svg"], // Ensure at least one image
+        : [product.images?.[0]?.url || "/placeholder.svg"],
     colors: product.colors || [],
     sizes: product.sizes || [],
     description: product.description,
     inStock: product.inStock,
     seller: product.seller,
-    material: "Premium Quality", // Add default material
+    material: "Premium Quality", // Default only if backend doesn't provide
   };
 }
