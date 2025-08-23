@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -20,15 +20,14 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { toast } from "sonner";
 import Header from "@/components/header";
+import { cities } from "@/constant/city";
+import { createOrder } from "@/lib/actions/orders";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, getTotalPrice, clearCart } = useCartStore();
-  const { isAuthenticated } = useAuthStore();
+  const { isAuthenticated, user } = useAuthStore();
   const [isProcessing, setIsProcessing] = useState(false);
-
-  // Mock cities array - replace with your cities constant
-  const cities = ["Dhaka", "Chittagong", "Sylhet", "Rajshahi", "Khulna", "Barishal", "Rangpur", "Mymensingh"];
 
   const [formData, setFormData] = useState({
     email: "",
@@ -43,12 +42,31 @@ export default function CheckoutPage() {
     tranxId: "",
   });
 
+  // Check authentication on component mount
+  useEffect(() => {
+    if (!isAuthenticated) {
+      toast.error("Please login to proceed with checkout");
+      router.push("/login");
+      return;
+    }
+    
+    // Pre-fill user data if available
+    if (user) {
+      setFormData(prev => ({
+        ...prev,
+        email: user.email || "",
+        firstName: user.firstName || "",
+        lastName: user.lastName || ""
+      }));
+    }
+  }, [isAuthenticated, user, router]);
+
   const totalPrice = getTotalPrice();
   const shipping = formData.city === "dhaka" ? 100 : 120;
   const tax = Math.round(totalPrice * 0.05);
   const finalTotal = totalPrice + shipping + tax;
 
-  const handleInputChange = (field, value) => {
+  const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -56,7 +74,7 @@ export default function CheckoutPage() {
     // Check required fields
     const requiredFields = ['email', 'firstName', 'lastName', 'address', 'city', 'postalCode', 'phone'];
     for (const field of requiredFields) {
-      if (!formData[field]) {
+      if (!formData[field as keyof typeof formData]) {
         toast.error(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
         return false;
       }
@@ -77,7 +95,7 @@ export default function CheckoutPage() {
     return true;
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     // Validate form before processing
@@ -85,23 +103,73 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Double-check authentication
+    if (!isAuthenticated) {
+      toast.error("Please login to place an order");
+      router.push("/login");
+      return;
+    }
+
     setIsProcessing(true);
 
     try {
-      // Simulate order processing
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Show success toast
-      toast.success("Order placed successfully! You will receive a confirmation call shortly.");
-
-      // Clear cart first, then navigate immediately
-      clearCart();
+      console.log("🛒 Starting order submission...");
+      console.log("📦 Cart items:", items);
+      console.log("👤 User authenticated:", isAuthenticated);
       
-      // Navigate to order success page immediately
-      router.push("/order-success");
+      // Prepare order data for backend
+      const orderData = {
+        items: items.map((item: any) => ({
+          product: item._id || item.id, // Use _id first, fallback to id
+          quantity: item.quantity,
+          price: parseFloat(item.price.replace("৳", "").replace(",", "")),
+          size: item.selectedSize,
+          color: item.selectedColor,
+          name: item.name,
+          image: item.image
+        })),
+        shippingAddress: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          street: formData.address,
+          city: formData.city,
+          zipCode: formData.postalCode,
+          phone: formData.phone,
+          email: formData.email
+        },
+        paymentMethod: formData.paymentMethod,
+        notes: formData.notes,
+        transactionId: formData.tranxId,
+        totalAmount: finalTotal,
+        shipping: shipping,
+        tax: tax
+      };
+
+      console.log("📋 Order data prepared:", orderData);
+
+      // Call backend API
+      const result = await createOrder(orderData);
+      
+      console.log("📬 Backend response:", result);
+
+      if (result.success) {
+        // Show success toast
+        toast.success(result.message || "Order placed successfully! You will receive a confirmation call shortly.");
+
+        // Clear cart first, then navigate
+        clearCart();
+        
+        // Navigate to order success page with order ID if available
+        const orderSuccessUrl = result.order ? `/order-success?orderId=${result.order._id}` : "/order-success";
+        router.push(orderSuccessUrl);
+      } else {
+        toast.error(result.message || "Failed to place order. Please try again.");
+        setIsProcessing(false);
+      }
 
     } catch (error) {
-      toast.error("Something went wrong. Please try again.");
+      console.error("Order submission error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
       setIsProcessing(false);
     }
   };
@@ -330,7 +398,7 @@ export default function CheckoutPage() {
                 <CardContent className="space-y-4">
                   {/* Order Items */}
                   <div className="space-y-3">
-                    {items.map((item) => (
+                    {items.map((item: any) => (
                       <div
                         key={item.itemKey}
                         className="flex items-start space-x-3 py-2 border-b last:border-b-0"
@@ -392,7 +460,7 @@ export default function CheckoutPage() {
                       <span>
                         Subtotal (
                         {items.reduce(
-                          (total, item) => total + item.quantity,
+                          (total: number, item: any) => total + item.quantity,
                           0
                         )}{" "}
                         items)

@@ -58,7 +58,7 @@ export function ProductCard({
             </h3>
           </Link>
           <p className="text-lg font-bold text-primary mb-3">{product.price}</p>
-          
+
           {showCategory && product.category && (
             <Badge variant="secondary" className="mb-3 capitalize">
               {product.category}

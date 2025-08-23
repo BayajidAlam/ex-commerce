@@ -1,43 +1,61 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Search, ShoppingCart, Heart, User, LogOut } from "lucide-react"
-import { useCartStore, useAuthStore } from "@/lib/store"
-import { logoutAction } from "@/lib/actions/auth"
-import Link from "next/link"
+} from "@/components/ui/dropdown-menu";
+import { Search, ShoppingCart, Heart, User, LogOut } from "lucide-react";
+import { useCartStore, useAuthStore } from "@/lib/store";
+import { logoutAction } from "@/lib/actions/auth";
+import Link from "next/link";
 
 export default function Header() {
-  const { items, getTotalItems } = useCartStore()
-  const { user, isAuthenticated } = useAuthStore() // Get user from Zustand store
-  const [searchQuery, setSearchQuery] = useState("")
+  const { items, getTotalItems } = useCartStore();
+  const { user, isAuthenticated } = useAuthStore(); // Get user from Zustand store
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Calculate total items directly from items array - this will update when items change
-  const totalItems = items.reduce((total: number, item: any) => total + item.quantity, 0)
-  
+  const totalItems = items.reduce(
+    (total: number, item: any) => total + item.quantity,
+    0
+  );
+
   // Debug cart updates
   useEffect(() => {
-    console.log("🛒 Cart items updated in header:", items.length, "items, total quantity:", totalItems);
-  }, [items, totalItems])
+    console.log(
+      "🛒 Cart items updated in header:",
+      items.length,
+      "items, total quantity:",
+      totalItems
+    );
+  }, [items, totalItems]);
+
+  // Debug auth state
+  useEffect(() => {
+    console.log("🔒 Auth state in header:", {
+      isAuthenticated,
+      user: user ? `${user.firstName} ${user.lastName}` : null,
+    });
+  }, [isAuthenticated, user]);
 
   const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (searchQuery.trim()) {
-      window.location.href = `/products?search=${encodeURIComponent(searchQuery)}`
+      window.location.href = `/products?search=${encodeURIComponent(
+        searchQuery
+      )}`;
     }
-  }
+  };
 
   const handleLogout = async () => {
-    await logoutAction()
-  }
+    await logoutAction();
+  };
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -55,10 +73,16 @@ export default function Header() {
             <Link href="/" className="text-gray-700 hover:text-gray-900">
               Home
             </Link>
-            <Link href="/products" className="text-gray-700 hover:text-gray-900">
+            <Link
+              href="/products"
+              className="text-gray-700 hover:text-gray-900"
+            >
               Products
             </Link>
-            <Link href="/categories" className="text-gray-700 hover:text-gray-900">
+            <Link
+              href="/categories"
+              className="text-gray-700 hover:text-gray-900"
+            >
               Categories
             </Link>
             <Link href="/about" className="text-gray-700 hover:text-gray-900">
@@ -120,7 +144,10 @@ export default function Header() {
                     {user.firstName} {user.lastName}
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="flex items-center w-full">
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center w-full"
+                    >
                       <User className="mr-2 h-4 w-4" />
                       Dashboard
                     </Link>
@@ -137,9 +164,9 @@ export default function Header() {
                       Wishlist
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem 
+                  <DropdownMenuItem
                     onClick={handleLogout}
-                    className="text-red-600 focus:text-red-600 focus:bg-red-50"
+                    className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"
                   >
                     <LogOut className="mr-2 h-4 w-4" />
                     Logout
@@ -157,5 +184,5 @@ export default function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

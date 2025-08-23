@@ -28,6 +28,14 @@ const orderSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
+  shipping: {
+    type: Number,
+    default: 0
+  },
+  tax: {
+    type: Number,
+    default: 0
+  },
   shippingAddress: {
     firstName: String,
     lastName: String,
@@ -36,7 +44,8 @@ const orderSchema = new mongoose.Schema({
     state: String,
     zipCode: String,
     country: String,
-    phone: String
+    phone: String,
+    email: String
   },
   status: {
     type: String,
@@ -53,6 +62,8 @@ const orderSchema = new mongoose.Schema({
     enum: ['cod', 'card', 'mobile_banking'],
     default: 'cod'
   },
+  transactionId: String,
+  notes: String,
   orderNumber: {
     type: String,
     unique: true,

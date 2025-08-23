@@ -26,7 +26,7 @@ export default function HomePage() {
     };
 
     addItem(cartItem, "default", "default", 1);
-    
+
     toast.success(`🛒 ${product.name} added to cart!`, {
       description: "1 item added successfully",
       className: "border-green-200 bg-green-50",
@@ -193,9 +193,9 @@ export default function HomePage() {
           {/* Product Grid */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             {seasonalProducts.map((product, i) => (
-              <ProductCard 
-                product={product} 
-                key={i} 
+              <ProductCard
+                product={product}
+                key={i}
                 onAddToCart={handleAddToCart}
                 showAddToCart={true}
               />
@@ -235,30 +235,29 @@ export default function HomePage() {
 
       <Categories />
 
-    <section className="w-full">
-  <div className="grid grid-cols-1 md:grid-cols-2">
-    {/* First Image */}
-    <div className="relative w-full h-[700px] overflow-hidden">
-      <Image
-        src="https://i.ibb.co.com/PvcyVZ2D/image.png"
-        alt="First"
-        fill
-        className="object-cover hover:scale-105 transition-transform duration-500"
-      />
-    </div>
+      <section className="w-full">
+        <div className="grid grid-cols-1 md:grid-cols-2">
+          {/* First Image */}
+          <div className="relative w-full h-[700px] overflow-hidden">
+            <Image
+              src="https://i.ibb.co.com/PvcyVZ2D/image.png"
+              alt="First"
+              fill
+              className="object-cover hover:scale-105 transition-transform duration-500"
+            />
+          </div>
 
-    {/* Second Image */}
-    <div className="relative w-full h-[700px] overflow-hidden ">
-      <Image
-        src="https://i.ibb.co.com/wF9t4QwY/image.png"
-        alt="Second"
-        fill
-        className="object-cover hover:scale-105 transition-transform duration-500"
-      />
-    </div>
-  </div>
-</section>
-
+          {/* Second Image */}
+          <div className="relative w-full h-[700px] overflow-hidden ">
+            <Image
+              src="https://i.ibb.co.com/wF9t4QwY/image.png"
+              alt="Second"
+              fill
+              className="object-cover hover:scale-105 transition-transform duration-500"
+            />
+          </div>
+        </div>
+      </section>
 
       {/* Recent Products */}
       <section className="py-40">
@@ -269,9 +268,9 @@ export default function HomePage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {recentProducts.slice(0, 4).map((product, i) => (
-              <ProductCard 
-                product={product} 
-                key={i} 
+              <ProductCard
+                product={product}
+                key={i}
                 onAddToCart={handleAddToCart}
                 showAddToCart={true}
               />

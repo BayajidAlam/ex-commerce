@@ -583,9 +583,9 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {recentProducts.map((product) => (
-              <ProductCard 
-                key={product.id} 
-                product={product} 
+              <ProductCard
+                key={product.id}
+                product={product}
                 showAddToCart={true}
                 onAddToCart={(product) => {
                   const cartItem = {
@@ -599,9 +599,9 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
                     quantity: 1,
                     itemKey: `${product.id}-default-default`,
                   };
-                  
+
                   addItem(cartItem, "default", "default", 1);
-                  
+
                   toast.success(`🛒 ${product.name} added to cart!`, {
                     description: "1 item added successfully",
                     className: "border-green-200 bg-green-50",
