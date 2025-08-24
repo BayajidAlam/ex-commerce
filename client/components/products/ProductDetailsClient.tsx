@@ -73,12 +73,12 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
     setSelectedImage(index);
   };
 
-  // Validation helper - Color is now optional, only size is required if multiple sizes available
+  // Validation helper - Size is mandatory if sizes are available
   const validateSelections = () => {
     const errors = [];
 
-    // Only require size selection if there are multiple sizes
-    if (product.sizes && product.sizes.length > 1 && !selectedSize) {
+    // Require size selection if any sizes are available
+    if (product.sizes && product.sizes.length > 0 && !selectedSize) {
       errors.push("Please select a size");
     }
 
@@ -302,6 +302,40 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
               <p className="text-gray-600 mb-4">
                 Material: {product.material || "Premium Quality"}
               </p>
+
+              {/* Color Selection - Made Selectable */}
+              {product.colors && product.colors.length > 0 && (
+                <div className="mb-4">
+                  <h3 className="font-semibold mb-3 flex items-center">
+                    Color
+                    {selectedColor && (
+                      <span className="ml-2 text-sm text-blue-600 bg-blue-50 px-2 py-1 rounded">
+                        {selectedColor}
+                      </span>
+                    )}
+                  </h3>
+                  <div className="flex space-x-2 flex-wrap gap-2">
+                    {product.colors.map((color: any, index: number) => {
+                      const colorName =
+                        typeof color === "string" ? color : color.name;
+                      return (
+                        <button
+                          key={index}
+                          onClick={() => setSelectedColor(colorName)}
+                          className={`px-3 py-2 border-2 rounded-md transition-all duration-200 font-medium text-sm ${
+                            selectedColor === colorName
+                              ? "border-blue-500 bg-blue-50 text-blue-700 scale-105 shadow-md"
+                              : "border-gray-300 hover:border-gray-400 hover:bg-gray-50 hover:scale-102"
+                          }`}
+                        >
+                          {colorName}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center space-x-2">
                 <Badge variant={product.inStock ? "default" : "secondary"}>
                   {product.inStock ? "In Stock" : "Out of Stock"}
@@ -333,37 +367,12 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
               </div>
             </div>
 
-            {/* Color Display - Show Only */}
-            {product.colors && product.colors.length > 0 && (
-              <div>
-                <h3 className="font-semibold mb-3 flex items-center">
-                  Available Colors
-                </h3>
-                <div className="flex space-x-2 flex-wrap gap-2">
-                  {product.colors.map((color: any, index: number) => {
-                    const colorName =
-                      typeof color === "string" ? color : color.name;
-                    return (
-                      <div
-                        key={index}
-                        className="px-3 py-2 border-2 border-gray-300 bg-gray-50 rounded-md font-medium text-sm text-gray-700 cursor-default"
-                      >
-                        {colorName}
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {/* Size Selection - Made Optional */}
+            {/* Size Selection - Made Mandatory */}
             {product.sizes && product.sizes.length > 0 && (
               <div>
                 <h3 className="font-semibold mb-3 flex items-center">
                   Size
-                  {product.sizes.length > 1 && (
-                    <span className="text-red-500 ml-1">*</span>
-                  )}
+                  <span className="text-red-500 ml-1">*</span>
                   {selectedSize && (
                     <span className="ml-2 text-sm text-green-600 bg-green-50 px-2 py-1 rounded">
                       {selectedSize}
@@ -432,47 +441,30 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
                     <Plus className="h-3 w-3" />
                   </Button>
                 </div>
-                <div className="text-sm text-gray-500">
-                  Total:{" "}
-                  <span className="font-semibold text-blue-600">
-                    ৳
-                    {(
-                      parseInt(
-                        product.price.replace("৳", "").replace(",", "")
-                      ) * quantity
-                    ).toLocaleString()}
-                  </span>
-                </div>
               </div>
             </div>
 
-            {/* Action Buttons - FIXED STYLING */}
+            {/* Action Buttons - Reduced Size */}
             <div className="space-y-4">
               <div className="flex gap-4">
                 <Button
                   onClick={handleAddToCart}
                   variant="outline"
-                  size="lg"
-                  className="flex-1 h-14 text-lg font-semibold cursor-pointer hover:bg-gray-50"
+                  size="default"
+                  className="flex-1 h-12 text-base font-semibold cursor-pointer hover:bg-gray-50"
                 >
-                  <ShoppingCart className="mr-2 h-5 w-5" />
+                  <ShoppingCart className="mr-2 h-4 w-4" />
                   Add to Cart
                 </Button>
 
                 <Button
                   onClick={handleOrderNow}
-                  size="lg"
-                  className="flex-1 h-14 text-lg font-semibold bg-black text-white cursor-pointer hover:bg-gray-800"
+                  size="default"
+                  className="flex-1 h-12 text-base font-semibold bg-black text-white cursor-pointer hover:bg-gray-800"
                 >
-                  <Heart className="mr-2 h-5 w-5" />
+                  <Heart className="mr-2 h-4 w-4" />
                   Order Now
                 </Button>
-              </div>
-
-              {/* Quick Action Hints */}
-              <div className="flex justify-between text-sm text-gray-500 cursor-pointer">
-                <span>💡 Add to cart to save for later</span>
-                <span>🚀 Order now for quick checkout</span>
               </div>
             </div>
 

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Image Upload Test</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .upload-section {
+      border: 1px solid #ddd;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+    }
+
+    input[type="file"] {
+      margin: 10px 0;
+    }
+
+    button {
+      background: #007cba;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    button:hover {
+      background: #005a87;
+    }
+
+    .result {
+      margin: 10px 0;
+      padding: 10px;
+      border-radius: 4px;
+    }
+
+    .success {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #c3e6cb;
+    }
+
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
+
+    .loading {
+      background: #d1ecf1;
+      color: #0c5460;
+      border: 1px solid #bee5eb;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Cloudinary Image Upload Test</h1>
+
+  <div class="upload-section">
+    <h2>Test Upload (No Authentication)</h2>
+    <p>This endpoint is for testing purposes and doesn't require authentication.</p>
+    <input type="file" id="testFiles" multiple accept="image/*">
+    <br>
+    <button onclick="testUpload()">Upload Test Images</button>
+    <div id="testResult"></div>
+  </div>
+
+  <div class="upload-section">
+    <h2>Get Authentication Token</h2>
+    <p>Login with admin credentials to get a token for authenticated uploads.</p>
+    <input type="email" id="email" placeholder="admin@arjo.com" value="admin@arjo.com">
+    <input type="password" id="password" placeholder="admin@aro" value="admin@aro">
+    <br>
+    <button onclick="login()">Login & Get Token</button>
+    <div id="loginResult"></div>
+  </div>
+
+  <div class="upload-section">
+    <h2>Authenticated Upload</h2>
+    <p>Upload images using authentication token (login first).</p>
+    <input type="file" id="authFiles" multiple accept="image/*">
+    <br>
+    <button onclick="authenticatedUpload()">Upload with Auth</button>
+    <div id="authResult"></div>
+  </div>
+
+  <script>
+    let authToken = null;
+    const API_BASE = 'http://localhost:5000';
+
+    async function testUpload() {
+      const files = document.getElementById('testFiles').files;
+      const resultDiv = document.getElementById('testResult');
+
+      if (files.length === 0) {
+        resultDiv.innerHTML = '<div class="error">Please select at least one image file.</div>';
+        return;
+      }
+
+      resultDiv.innerHTML = '<div class="loading">Uploading images...</div>';
+
+      const formData = new FormData();
+      for (let file of files) {
+        formData.append('images', file);
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/api/upload/cloudinary-test`, {
+          method: 'POST',
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>Success!</strong> ${result.message}<br>
+                            Successful uploads: ${result.successful.length}<br>
+                            Failed uploads: ${result.failed.length}
+                        </div>
+                    `;
+
+          if (result.successful.length > 0) {
+            result.successful.forEach((img, index) => {
+              resultDiv.innerHTML += `
+                                <div style="margin: 10px 0;">
+                                    <strong>Image ${index + 1}:</strong><br>
+                                    <img src="${img.secure_url}" style="max-width: 200px; height: auto; border: 1px solid #ddd;">
+                                    <br><small>URL: ${img.secure_url}</small>
+                                </div>
+                            `;
+            });
+          }
+        } else {
+          resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${result.message}</div>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
+      }
+    }
+
+    async function login() {
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const resultDiv = document.getElementById('loginResult');
+
+      resultDiv.innerHTML = '<div class="loading">Logging in...</div>';
+
+      try {
+        const response = await fetch(`${API_BASE}/api/auth/login`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ email, password })
+        });
+
+        const result = await response.json();
+        console.log('Login response:', result);
+
+        if (response.ok && result.token) {
+          authToken = result.token;
+          // Store token in localStorage to match your app's logic
+          localStorage.setItem('auth-token', result.token);
+
+          resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>Login successful!</strong><br>
+                            Token: ${authToken.substring(0, 20)}...<br>
+                            User: ${result.user.firstName} ${result.user.lastName} (${result.user.role})
+                        </div>
+                    `;
+        } else {
+          resultDiv.innerHTML = `<div class="error"><strong>Login failed:</strong> ${result.error || result.message || 'Unknown error'}</div>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
+      }
+    }
+
+    async function authenticatedUpload() {
+      const files = document.getElementById('authFiles').files;
+      const resultDiv = document.getElementById('authResult');
+
+      if (!authToken) {
+        resultDiv.innerHTML = '<div class="error">Please login first to get an authentication token.</div>';
+        return;
+      }
+
+      if (files.length === 0) {
+        resultDiv.innerHTML = '<div class="error">Please select at least one image file.</div>';
+        return;
+      }
+
+      resultDiv.innerHTML = '<div class="loading">Uploading images with authentication...</div>';
+
+      const formData = new FormData();
+      for (let file of files) {
+        formData.append('images', file);
+      }
+
+      try {
+        const response = await fetch(`${API_BASE}/api/upload/cloudinary`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: formData
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          resultDiv.innerHTML = `
+                        <div class="success">
+                            <strong>Authenticated upload successful!</strong> ${result.message}<br>
+                            Successful uploads: ${result.successful.length}<br>
+                            Failed uploads: ${result.failed.length}
+                        </div>
+                    `;
+
+          if (result.successful.length > 0) {
+            result.successful.forEach((img, index) => {
+              resultDiv.innerHTML += `
+                                <div style="margin: 10px 0;">
+                                    <strong>Image ${index + 1}:</strong><br>
+                                    <img src="${img.secure_url}" style="max-width: 200px; height: auto; border: 1px solid #ddd;">
+                                    <br><small>URL: ${img.secure_url}</small>
+                                </div>
+                            `;
+            });
+          }
+        } else {
+          resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${result.message}</div>`;
+        }
+      } catch (error) {
+        resultDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
+      }
+    }
+  </script>
+</body>
+
+</html>

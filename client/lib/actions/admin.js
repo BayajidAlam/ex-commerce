@@ -346,28 +346,104 @@ export const uploadToCloudinary = async (file) => {
   }
 };
 
-// Batch upload to Cloudinary
+// Upload multiple images to Cloudinary
 export const uploadMultipleToCloudinary = async (files) => {
   try {
-    const uploadPromises = files.map((file) => uploadToCloudinary(file));
-    const results = await Promise.all(uploadPromises);
+    if (!files || files.length === 0) {
+      return {
+        success: false,
+        message: "No files selected",
+      };
+    }
 
-    const successful = results.filter((result) => result.success);
-    const failed = results.filter((result) => !result.success);
+    const formData = new FormData();
+
+    // Add each file to FormData
+    Array.from(files).forEach((file) => {
+      formData.append("images", file);
+    });
+
+    console.log("🖼️ Uploading", files.length, "images to Cloudinary...");
+
+    const authHeaders = getAuthHeaders();
+    const response = await fetch(`${API_BASE_URL}/api/upload/cloudinary`, {
+      method: "POST",
+      headers: {
+        Authorization: authHeaders.Authorization,
+        // Don't set Content-Type for FormData - browser will set it automatically with boundary
+      },
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to upload images");
+    }
+
+    console.log("✅ Images uploaded successfully:", data);
 
     return {
-      success: failed.length === 0,
-      successful,
-      failed,
-      message: `${successful.length} images uploaded successfully${
-        failed.length > 0 ? `, ${failed.length} failed` : ""
-      }`,
+      success: true,
+      message: `Successfully uploaded ${data.successful?.length || 0} images`,
+      successful: data.successful || [],
+      failed: data.failed || [],
     };
   } catch (error) {
-    console.error("Batch upload error:", error);
+    console.error("🚨 Image upload error:", error);
     return {
       success: false,
-      message: "Failed to upload images",
+      message: error.message || "Failed to upload images",
+    };
+  }
+};
+
+// Single image upload function
+export const uploadSingleToCloudinary = async (file) => {
+  try {
+    if (!file) {
+      return {
+        success: false,
+        message: "No file selected",
+      };
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    console.log("🖼️ Uploading single image to Cloudinary...");
+
+    const authHeaders = getAuthHeaders();
+    const response = await fetch(
+      `${API_BASE_URL}/api/upload/cloudinary-single`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: authHeaders.Authorization,
+          // Don't set Content-Type for FormData - browser will set it automatically with boundary
+        },
+        body: formData,
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to upload image");
+    }
+
+    console.log("✅ Single image uploaded successfully:", data);
+
+    return {
+      success: true,
+      message: "Image uploaded successfully",
+      data: data.data,
+    };
+  } catch (error) {
+    console.error("🚨 Single image upload error:", error);
+    return {
+      success: false,
+      message: error.message || "Failed to upload image",
     };
   }
 };
