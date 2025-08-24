@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
@@ -10,15 +10,20 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, ShoppingCart, User, LogOut, Settings } from "lucide-react";
+import { ShoppingCart, User, LogOut, Settings } from "lucide-react";
 import { useCartStore, useAuthStore } from "@/lib/store";
 import { logoutAction } from "@/lib/actions/auth";
 import Link from "next/link";
+import SearchDropdown from "./SearchDropdown";
 
 export default function Header() {
+  const router = useRouter();
+  const pathname = usePathname();
   const { items, getTotalItems } = useCartStore();
   const { user, isAuthenticated } = useAuthStore(); // Get user from Zustand store
-  const [searchQuery, setSearchQuery] = useState("");
+
+  // Check if we're in admin dashboard
+  const isAdminDashboard = pathname?.startsWith("/admin/dashboard");
 
   // Calculate total items directly from items array - this will update when items change
   const totalItems = items.reduce(
@@ -44,13 +49,12 @@ export default function Header() {
     });
   }, [isAuthenticated, user]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      window.location.href = `/products?search=${encodeURIComponent(
-        searchQuery
-      )}`;
-    }
+  const handleAdminSearch = (query: string) => {
+    // For admin dashboard, trigger a global search event
+    const searchEvent = new CustomEvent("adminGlobalSearch", {
+      detail: { query: query.trim() },
+    });
+    window.dispatchEvent(searchEvent);
   };
 
   const handleLogout = async () => {
@@ -93,25 +97,16 @@ export default function Header() {
           {/* Right Side */}
           <div className="flex items-center space-x-4">
             {/* Search */}
-            <form onSubmit={handleSearch} className="relative hidden md:block">
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-40 pr-10"
-                />
-                <Button
-                  type="submit"
-                  variant="ghost"
-                  size="icon"
-                  className="absolute right-0 top-0 h-full"
-                >
-                  <Search className="h-4 w-4" />
-                </Button>
-              </div>
-            </form>
+            <div className="hidden md:block">
+              <SearchDropdown
+                placeholder={
+                  isAdminDashboard
+                    ? "Search admin data..."
+                    : "Search products..."
+                }
+                onSearch={isAdminDashboard ? handleAdminSearch : undefined}
+              />
+            </div>
 
             {/* Cart */}
             <Link href="/cart">

@@ -89,6 +89,7 @@ import {
   XCircle,
   RefreshCw,
   Search,
+  Search,
   Filter,
   Star,
   BarChart3,
@@ -124,6 +125,14 @@ export default function AdminDashboard() {
     pendingOrders: 0,
     lowStockProducts: 0,
   });
+
+  // Search state
+  const [searchTerms, setSearchTerms] = useState({
+    products: "",
+    orders: "",
+    customers: "",
+  });
+  const [globalSearchQuery, setGlobalSearchQuery] = useState("");
 
   // Product form state
   const [productForm, setProductForm] = useState({
@@ -193,6 +202,30 @@ export default function AdminDashboard() {
     }
 
     fetchDashboardData();
+
+    // Listen for global search events from header
+    const handleGlobalSearch = (event: CustomEvent) => {
+      const query = event.detail.query;
+      setGlobalSearchQuery(query);
+      // Apply the global search to all tabs
+      setSearchTerms({
+        products: query,
+        orders: query,
+        customers: query,
+      });
+    };
+
+    window.addEventListener(
+      "adminGlobalSearch",
+      handleGlobalSearch as EventListener
+    );
+
+    return () => {
+      window.removeEventListener(
+        "adminGlobalSearch",
+        handleGlobalSearch as EventListener
+      );
+    };
   }, [isAuthenticated, user, router]);
 
   const fetchDashboardData = async () => {
@@ -727,6 +760,48 @@ export default function AdminDashboard() {
 
   const formatDate = (date: string) => new Date(date).toLocaleString();
 
+  // Search and filter functions
+  const filteredProducts = products.filter((product) => {
+    const searchTerm = searchTerms.products.toLowerCase();
+    return (
+      product.name?.toLowerCase().includes(searchTerm) ||
+      product.category?.toLowerCase().includes(searchTerm) ||
+      product.sku?.toLowerCase().includes(searchTerm) ||
+      product.description?.toLowerCase().includes(searchTerm)
+    );
+  });
+
+  const filteredOrders = orders.filter((order) => {
+    const searchTerm = searchTerms.orders.toLowerCase();
+    const customerName =
+      order.user?.firstName && order.user?.lastName
+        ? `${order.user.firstName} ${order.user.lastName}`
+        : order.user?.name || order.customerInfo?.name || "";
+
+    return (
+      order._id?.toLowerCase().includes(searchTerm) ||
+      customerName.toLowerCase().includes(searchTerm) ||
+      order.status?.toLowerCase().includes(searchTerm) ||
+      order.orderNumber?.toLowerCase().includes(searchTerm) ||
+      order.transactionId?.toLowerCase().includes(searchTerm)
+    );
+  });
+
+  const filteredCustomers = customers.filter((customer) => {
+    const searchTerm = searchTerms.customers.toLowerCase();
+    const fullName =
+      customer.firstName && customer.lastName
+        ? `${customer.firstName} ${customer.lastName}`
+        : customer.name || "";
+
+    return (
+      fullName.toLowerCase().includes(searchTerm) ||
+      customer.email?.toLowerCase().includes(searchTerm) ||
+      customer.phone?.toLowerCase().includes(searchTerm) ||
+      customer.role?.toLowerCase().includes(searchTerm)
+    );
+  });
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -772,6 +847,35 @@ export default function AdminDashboard() {
               </div>
             </div>
           </div>
+
+          {/* Global Search Indicator */}
+          {globalSearchQuery && (
+            <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Search className="h-4 w-4 text-blue-600" />
+                  <span className="text-sm font-medium text-blue-900">
+                    Global search active: "{globalSearchQuery}"
+                  </span>
+                  <Badge variant="secondary" className="text-xs">
+                    Searching across all tabs
+                  </Badge>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setGlobalSearchQuery("");
+                    setSearchTerms({ products: "", orders: "", customers: "" });
+                  }}
+                  className="text-blue-600 hover:text-blue-800"
+                >
+                  <X className="h-4 w-4 mr-1" />
+                  Clear
+                </Button>
+              </div>
+            </div>
+          )}
 
           {/* Stats Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
@@ -960,6 +1064,39 @@ export default function AdminDashboard() {
                 </Button>
               </div>
 
+              {/* Search Bar for Products */}
+              <div className="flex items-center gap-4">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search products by name, category, SKU..."
+                    value={searchTerms.products}
+                    onChange={(e) =>
+                      setSearchTerms((prev) => ({
+                        ...prev,
+                        products: e.target.value,
+                      }))
+                    }
+                    className="pl-10"
+                  />
+                </div>
+                {searchTerms.products && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setSearchTerms((prev) => ({ ...prev, products: "" }))
+                    }
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Clear
+                  </Button>
+                )}
+                <div className="text-sm text-gray-500">
+                  {filteredProducts.length} of {products.length} products
+                </div>
+              </div>
+
               <Card>
                 <CardContent className="p-0">
                   <Table>
@@ -976,7 +1113,7 @@ export default function AdminDashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {products.map((product) => (
+                      {filteredProducts.map((product) => (
                         <TableRow key={product._id}>
                           <TableCell className="font-medium">
                             {product.name}
@@ -1115,9 +1252,11 @@ export default function AdminDashboard() {
                       ))}
                     </TableBody>
                   </Table>
-                  {products.length === 0 && (
+                  {filteredProducts.length === 0 && (
                     <div className="text-center py-8 text-gray-500">
-                      No products found. Add your first product!
+                      {searchTerms.products
+                        ? `No products found matching "${searchTerms.products}"`
+                        : "No products found. Add your first product!"}
                     </div>
                   )}
                 </CardContent>
@@ -1128,6 +1267,39 @@ export default function AdminDashboard() {
             <TabsContent value="orders" className="space-y-6">
               <div className="flex items-center justify-between">
                 <h2 className="text-2xl font-bold">Order Management</h2>
+              </div>
+
+              {/* Search Bar for Orders */}
+              <div className="flex items-center gap-4">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search orders by ID, customer, status..."
+                    value={searchTerms.orders}
+                    onChange={(e) =>
+                      setSearchTerms((prev) => ({
+                        ...prev,
+                        orders: e.target.value,
+                      }))
+                    }
+                    className="pl-10"
+                  />
+                </div>
+                {searchTerms.orders && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setSearchTerms((prev) => ({ ...prev, orders: "" }))
+                    }
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Clear
+                  </Button>
+                )}
+                <div className="text-sm text-gray-500">
+                  {filteredOrders.length} of {orders.length} orders
+                </div>
               </div>
 
               <Card>
@@ -1144,7 +1316,7 @@ export default function AdminDashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {orders.map((order) => (
+                      {filteredOrders.map((order) => (
                         <TableRow key={order._id}>
                           <TableCell className="font-mono text-sm">
                             {order._id.slice(-8)}
@@ -1213,9 +1385,11 @@ export default function AdminDashboard() {
                       ))}
                     </TableBody>
                   </Table>
-                  {orders.length === 0 && (
+                  {filteredOrders.length === 0 && (
                     <div className="text-center py-8 text-gray-500">
-                      No orders found.
+                      {searchTerms.orders
+                        ? `No orders found matching "${searchTerms.orders}"`
+                        : "No orders found."}
                     </div>
                   )}
                 </CardContent>
@@ -1228,6 +1402,39 @@ export default function AdminDashboard() {
                 <h2 className="text-2xl font-bold">Customer Management</h2>
                 <div className="flex items-center gap-2">
                   <Badge variant="outline">Total: {customersStats.total}</Badge>
+                </div>
+              </div>
+
+              {/* Search Bar for Customers */}
+              <div className="flex items-center gap-4">
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                  <Input
+                    placeholder="Search customers by name, email, phone..."
+                    value={searchTerms.customers}
+                    onChange={(e) =>
+                      setSearchTerms((prev) => ({
+                        ...prev,
+                        customers: e.target.value,
+                      }))
+                    }
+                    className="pl-10"
+                  />
+                </div>
+                {searchTerms.customers && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() =>
+                      setSearchTerms((prev) => ({ ...prev, customers: "" }))
+                    }
+                  >
+                    <X className="h-4 w-4 mr-1" />
+                    Clear
+                  </Button>
+                )}
+                <div className="text-sm text-gray-500">
+                  {filteredCustomers.length} of {customers.length} customers
                 </div>
               </div>
 
@@ -1246,7 +1453,7 @@ export default function AdminDashboard() {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {customers.map((customer) => (
+                      {filteredCustomers.map((customer) => (
                         <TableRow key={customer._id}>
                           <TableCell className="font-medium">
                             {customer.firstName && customer.lastName
@@ -1343,13 +1550,15 @@ export default function AdminDashboard() {
                           </TableCell>
                         </TableRow>
                       ))}
-                      {customers.length === 0 && (
+                      {filteredCustomers.length === 0 && (
                         <TableRow>
                           <TableCell
                             colSpan={7}
                             className="text-center py-6 text-gray-500"
                           >
-                            No customers found
+                            {searchTerms.customers
+                              ? `No customers found matching "${searchTerms.customers}"`
+                              : "No customers found"}
                           </TableCell>
                         </TableRow>
                       )}
