@@ -31,7 +31,7 @@ import { getOrderById } from "@/lib/actions/orders";
 import { toast } from "sonner";
 import Image from "next/image";
 
-export default function OrderSuccessPage() {
+export default function OrderStatusPage() {
   const searchParams = useSearchParams();
   const orderId = searchParams.get("orderId");
 
@@ -316,14 +316,14 @@ export default function OrderSuccessPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
       <Header />
 
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
+      <div className="container mx-auto px-4 py-6 sm:py-8">
+        <div className="max-w-6xl mx-auto">
           {loading ? (
-            <Card className="p-12 text-center border-0 shadow-xl bg-white/70 backdrop-blur-sm">
-              <Loader2 className="mx-auto h-12 w-12 animate-spin text-green-600 mb-6" />
+            <Card className="p-8 sm:p-12 text-center border-0 shadow-xl bg-white/80 backdrop-blur-sm">
+              <Loader2 className="mx-auto h-12 w-12 animate-spin text-blue-600 mb-6" />
               <h2 className="text-xl font-semibold text-gray-700 mb-2">
                 Loading Order Details
               </h2>
@@ -332,63 +332,80 @@ export default function OrderSuccessPage() {
               </p>
             </Card>
           ) : error ? (
-            <Card className="p-12 text-center border-0 shadow-xl bg-white/70 backdrop-blur-sm">
+            <Card className="p-8 sm:p-12 text-center border-0 shadow-xl bg-white/80 backdrop-blur-sm">
               <div className="text-red-500 mb-6">
-                <Package className="mx-auto h-16 w-16 mb-4" />
+                <Package className="mx-auto h-16 w-16 mb-4 text-red-400" />
                 <h2 className="text-xl font-semibold mb-2">Order Not Found</h2>
                 <p className="text-sm text-gray-600">{error}</p>
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/orders">
+                  <Button className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700">
+                    <Package className="mr-2 h-4 w-4" />
+                    View All Orders
+                  </Button>
+                </Link>
                 <Link href="/products">
                   <Button variant="outline" className="w-full sm:w-auto">
                     <ShoppingBag className="mr-2 h-4 w-4" />
                     Continue Shopping
                   </Button>
                 </Link>
-                <Link href="/">
-                  <Button className="w-full sm:w-auto">
-                    <Home className="mr-2 h-4 w-4" />
-                    Back to Home
-                  </Button>
-                </Link>
               </div>
             </Card>
           ) : (
             <div className="space-y-6">
-              {/* Success Header */}
+              {/* Back Button */}
+              <div className="flex items-center gap-4">
+                <Link href="/orders">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowRight className="h-4 w-4 rotate-180" />
+                    Back to Orders
+                  </Button>
+                </Link>
+                <div className="h-px bg-gray-200 flex-1"></div>
+              </div>
+
+              {/* Status Header */}
               <Card
                 className={`border-0 shadow-xl bg-gradient-to-r ${
                   getStatusDisplay(orderData.status).bgColor
                 } text-white overflow-hidden`}
               >
-                <CardContent className="p-8 text-center relative">
+                <CardContent className="p-4 text-center relative">
                   <div className="absolute inset-0 bg-black/10"></div>
                   <div className="relative z-10">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6 animate-pulse">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-white/20 rounded-full mb-3">
                       {(() => {
                         const StatusIcon = getStatusDisplay(
                           orderData.status
                         ).icon;
-                        return <StatusIcon className="h-12 w-12" />;
+                        return <StatusIcon className="h-6 w-6" />;
                       })()}
                     </div>
-                    <h1 className="text-4xl font-bold mb-4">
+                    <h1 className="text-lg sm:text-xl font-bold mb-2">
                       {getStatusDisplay(orderData.status).title}
                     </h1>
-                    <p className="text-xl text-white/90 mb-6">
+                    <p className="text-xs sm:text-sm text-white/90 mb-3">
                       {getStatusDisplay(orderData.status).message}
                     </p>
-                    <div className="flex items-center justify-center gap-2 text-lg">
-                      <span>Order #</span>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs sm:text-sm">
+                      <span className="text-white/80">Order #</span>
                       <Badge
-                        className="bg-white/20 text-white border-white/30 text-lg px-4 py-1 cursor-pointer hover:bg-white/30 transition-colors"
+                        className="bg-white/20 text-white border-white/30 text-xs px-2 py-1 cursor-pointer hover:bg-white/30 transition-colors break-all font-mono"
                         onClick={copyOrderNumber}
                       >
-                        {orderData.orderNumber}
+                        <span className="font-mono">
+                          {orderData.orderNumber}
+                        </span>
                         {copied ? (
-                          <Check className="ml-2 h-4 w-4" />
+                          <Check className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                         ) : (
-                          <Copy className="ml-2 h-4 w-4" />
+                          <Copy className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                         )}
                       </Badge>
                     </div>

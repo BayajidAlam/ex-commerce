@@ -49,14 +49,14 @@ export default function CheckoutPage() {
       router.push("/login");
       return;
     }
-    
+
     // Pre-fill user data if available
     if (user) {
-      setFormData(prev => ({
+      setFormData((prev) => ({
         ...prev,
         email: user.email || "",
         firstName: user.firstName || "",
-        lastName: user.lastName || ""
+        lastName: user.lastName || "",
       }));
     }
   }, [isAuthenticated, user, router]);
@@ -72,17 +72,29 @@ export default function CheckoutPage() {
 
   const validateForm = () => {
     // Check required fields
-    const requiredFields = ['email', 'firstName', 'lastName', 'address', 'city', 'postalCode', 'phone'];
+    const requiredFields = [
+      "email",
+      "firstName",
+      "lastName",
+      "address",
+      "city",
+      "postalCode",
+      "phone",
+    ];
     for (const field of requiredFields) {
       if (!formData[field as keyof typeof formData]) {
-        toast.error(`Please fill in ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`);
+        toast.error(
+          `Please fill in ${field.replace(/([A-Z])/g, " $1").toLowerCase()}`
+        );
         return false;
       }
     }
 
     // Validate transaction ID for COD
     if (formData.paymentMethod === "cod" && !formData.tranxId) {
-      toast.error("Please enter the Transaction ID for delivery charge payment");
+      toast.error(
+        "Please enter the Transaction ID for delivery charge payment"
+      );
       return false;
     }
 
@@ -97,7 +109,7 @@ export default function CheckoutPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validate form before processing
     if (!validateForm()) {
       return;
@@ -116,7 +128,7 @@ export default function CheckoutPage() {
       console.log("🛒 Starting order submission...");
       console.log("📦 Cart items:", items);
       console.log("👤 User authenticated:", isAuthenticated);
-      
+
       // Prepare order data for backend
       const orderData = {
         items: items.map((item: any) => ({
@@ -126,7 +138,7 @@ export default function CheckoutPage() {
           size: item.selectedSize,
           color: item.selectedColor,
           name: item.name,
-          image: item.image
+          image: item.image,
         })),
         shippingAddress: {
           firstName: formData.firstName,
@@ -135,38 +147,44 @@ export default function CheckoutPage() {
           city: formData.city,
           zipCode: formData.postalCode,
           phone: formData.phone,
-          email: formData.email
+          email: formData.email,
         },
         paymentMethod: formData.paymentMethod,
         notes: formData.notes,
         transactionId: formData.tranxId,
         totalAmount: finalTotal,
         shipping: shipping,
-        tax: tax
+        tax: tax,
       };
 
       console.log("📋 Order data prepared:", orderData);
 
       // Call backend API
       const result = await createOrder(orderData);
-      
+
       console.log("📬 Backend response:", result);
 
       if (result.success) {
         // Show success toast
-        toast.success(result.message || "Order placed successfully! You will receive a confirmation call shortly.");
+        toast.success(
+          result.message ||
+            "Order placed successfully! You will receive a confirmation call shortly."
+        );
 
         // Clear cart first, then navigate
         clearCart();
-        
+
         // Navigate to order success page with order ID if available
-        const orderSuccessUrl = result.order ? `/order-success?orderId=${result.order._id}` : "/order-success";
+        const orderSuccessUrl = result.order
+          ? `/order-success?orderId=${result.order._id}`
+          : "/order-success";
         router.push(orderSuccessUrl);
       } else {
-        toast.error(result.message || "Failed to place order. Please try again.");
+        toast.error(
+          result.message || "Failed to place order. Please try again."
+        );
         setIsProcessing(false);
       }
-
     } catch (error) {
       console.error("Order submission error:", error);
       toast.error("An unexpected error occurred. Please try again.");
@@ -365,7 +383,8 @@ export default function CheckoutPage() {
                           required
                         />
                         <p className="text-xs text-gray-600 mt-1">
-                          Enter the transaction ID you received after sending the delivery charge
+                          Enter the transaction ID you received after sending
+                          the delivery charge
                         </p>
                       </div>
                     </div>
@@ -468,7 +487,13 @@ export default function CheckoutPage() {
                       <span>৳{totalPrice.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-sm">
-                      <span>Shipping ({formData.city === "dhaka" ? "Inside Dhaka" : "Outside Dhaka"})</span>
+                      <span>
+                        Shipping (
+                        {formData.city === "dhaka"
+                          ? "Inside Dhaka"
+                          : "Outside Dhaka"}
+                        )
+                      </span>
                       <span>৳{shipping.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-sm">

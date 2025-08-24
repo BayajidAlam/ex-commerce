@@ -1,6 +1,7 @@
 # 🧪 Checkout Integration Testing Guide
 
 ## Prerequisites
+
 - ✅ Backend server running on http://localhost:5000
 - ✅ Frontend client running on http://localhost:3000
 - ✅ MongoDB connected
@@ -9,13 +10,16 @@
 ## 🔍 Testing Checklist
 
 ### **Phase 1: Authentication & Access**
+
 1. **Test Middleware Protection**
    - [ ] Visit `/checkout` without login → Should redirect to `/login`
    - [ ] Login successfully → Should redirect back to checkout
    - [ ] Visit `/checkout` while logged in → Should show checkout page
 
 ### **Phase 2: Cart Integration**
+
 1. **Add Products to Cart**
+
    - [ ] Go to `/products`
    - [ ] Add at least 2-3 products with different colors/sizes
    - [ ] Verify cart count updates in header
@@ -28,7 +32,9 @@
    - [ ] Check price calculations (subtotal, shipping, tax, total)
 
 ### **Phase 3: Form Validation**
+
 1. **Required Fields**
+
    - [ ] Try submitting without filling required fields
    - [ ] Verify validation messages appear
    - [ ] Fill all required fields
@@ -40,7 +46,9 @@
    - [ ] Enter valid transaction ID
 
 ### **Phase 4: Order Submission**
+
 1. **Backend Integration**
+
    - [ ] Fill complete form with valid data
    - [ ] Submit order
    - [ ] Check browser console for logs
@@ -53,6 +61,7 @@
    - [ ] Check order details display correctly
 
 ### **Phase 5: Order Success Page**
+
 1. **Order Display**
    - [ ] Verify order number is shown
    - [ ] Check all order details are correct
@@ -62,21 +71,25 @@
 ## 🐛 Common Issues to Check
 
 ### **Authentication Issues**
+
 - Check browser cookies for `auth-token`
 - Verify token is valid in Network tab
 - Check console for authentication errors
 
 ### **Cart Issues**
+
 - Verify cart items have proper `_id` or `id` fields
 - Check cart items structure in console
 - Ensure product IDs are valid MongoDB ObjectIds
 
 ### **API Issues**
+
 - Check Network tab for failed requests
 - Verify API responses in browser DevTools
 - Check backend logs for detailed errors
 
 ### **Database Issues**
+
 - Ensure MongoDB is running
 - Check if products exist in database
 - Verify user collection has proper data
@@ -93,11 +106,13 @@
 ## 🔧 Debugging Tips
 
 1. **Open Browser DevTools**
+
    - Console tab for logs
    - Network tab for API calls
    - Application tab for cookies/localStorage
 
 2. **Check Backend Logs**
+
    - Look for order creation logs with 📦 emoji
    - Check for validation errors with ❌ emoji
    - Verify database operations
