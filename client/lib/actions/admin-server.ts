@@ -377,6 +377,198 @@ export async function deleteOrder(orderId: string) {
   }
 }
 
+// User Management Functions
+
+export async function getAdminUsers(params?: {
+  page?: number;
+  limit?: number;
+  search?: string;
+  role?: string;
+  sortBy?: string;
+  sortOrder?: string;
+}) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "admin") {
+      return { success: false, message: "Admin access required" };
+    }
+
+    const headers = await getServerAuthHeaders();
+
+    // Build query string
+    const queryParams = new URLSearchParams();
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.limit) queryParams.append("limit", params.limit.toString());
+    if (params?.search) queryParams.append("search", params.search);
+    if (params?.role) queryParams.append("role", params.role);
+    if (params?.sortBy) queryParams.append("sortBy", params.sortBy);
+    if (params?.sortOrder) queryParams.append("sortOrder", params.sortOrder);
+
+    const response = await fetch(
+      `${API_BASE}/api/admin/users?${queryParams.toString()}`,
+      {
+        headers,
+        cache: "no-store",
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return {
+        success: false,
+        message: `Failed to fetch users: ${errorText}`,
+      };
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to fetch users",
+    };
+  }
+}
+
+export async function getAdminUserDetails(userId: string) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "admin") {
+      return { success: false, message: "Admin access required" };
+    }
+
+    const headers = await getServerAuthHeaders();
+
+    const response = await fetch(`${API_BASE}/api/admin/users/${userId}`, {
+      headers,
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return {
+        success: false,
+        message: `Failed to fetch user details: ${errorText}`,
+      };
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching user details:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Failed to fetch user details",
+    };
+  }
+}
+
+export async function updateUser(userId: string, userData: any) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "admin") {
+      return { success: false, message: "Admin access required" };
+    }
+
+    const headers = await getServerAuthHeaders();
+
+    const response = await fetch(`${API_BASE}/api/admin/users/${userId}`, {
+      method: "PUT",
+      headers,
+      body: JSON.stringify(userData),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return {
+        success: false,
+        message: `Failed to update user: ${errorText}`,
+      };
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error updating user:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to update user",
+    };
+  }
+}
+
+export async function deleteUser(userId: string) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "admin") {
+      return { success: false, message: "Admin access required" };
+    }
+
+    const headers = await getServerAuthHeaders();
+
+    const response = await fetch(`${API_BASE}/api/admin/users/${userId}`, {
+      method: "DELETE",
+      headers,
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return {
+        success: false,
+        message: `Failed to delete user: ${errorText}`,
+      };
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to delete user",
+    };
+  }
+}
+
+export async function toggleUserStatus(userId: string) {
+  try {
+    const user = await getCurrentUser();
+    if (!user || user.role !== "admin") {
+      return { success: false, message: "Admin access required" };
+    }
+
+    const headers = await getServerAuthHeaders();
+
+    const response = await fetch(
+      `${API_BASE}/api/admin/users/${userId}/toggle-active`,
+      {
+        method: "PATCH",
+        headers,
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      return {
+        success: false,
+        message: `Failed to toggle user status: ${errorText}`,
+      };
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error toggling user status:", error);
+    return {
+      success: false,
+      message:
+        error instanceof Error ? error.message : "Failed to toggle user status",
+    };
+  }
+}
+
 // Test admin authentication
 export async function testAdminAuth() {
   try {

@@ -55,90 +55,15 @@ router.get("/", auth, adminAuth, async (req, res) => {
   }
 });
 
-// GET /api/admin/orders/:id - Get single order (admin only)
-router.get("/:id", auth, adminAuth, async (req, res) => {
-  try {
-    const { id } = req.params;
-
-    const order = await Order.findById(id)
-      .populate("user", "name email phone")
-      .populate("items.product", "name price images sku");
-
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
-    }
-
-    res.json({
-      success: true,
-      order,
-    });
-  } catch (error) {
-    console.error("Error fetching order:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-// PUT /api/admin/orders/:id/status - Update order status (admin only)
-router.put("/:id/status", auth, adminAuth, async (req, res) => {
-  try {
-    const { id } = req.params;
-    const { status } = req.body;
-
-    // Validate status
-    const validStatuses = [
-      "pending",
-      "confirmed",
-      "shipped",
-      "delivered",
-      "cancelled",
-    ];
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid status",
-      });
-    }
-
-    const order = await Order.findById(id);
-    if (!order) {
-      return res.status(404).json({
-        success: false,
-        message: "Order not found",
-      });
-    }
-
-    // Update order status
-    order.status = status;
-    await order.save();
-
-    // Populate the updated order for response
-    const updatedOrder = await Order.findById(id)
-      .populate("user", "name email")
-      .populate("items.product", "name price images");
-
-    res.json({
-      success: true,
-      message: "Order status updated successfully",
-      order: updatedOrder,
-    });
-  } catch (error) {
-    console.error("Error updating order status:", error);
-    res.status(500).json({
-      success: false,
-      message: "Internal server error",
-    });
-  }
-});
-
-// GET /api/admin/stats - Get admin dashboard statistics
+// GET /api/admin/orders/stats - Get admin dashboard statistics
 router.get("/stats", auth, adminAuth, async (req, res) => {
   try {
+    console.log("📊 Stats endpoint called");
+
+    // Debug: Check if there are any orders at all
+    const allOrders = await Order.find().limit(5);
+    console.log("Sample orders:", allOrders);
+
     const [totalOrders, totalRevenue, pendingOrders, totalProducts] =
       await Promise.all([
         Order.countDocuments(),
@@ -150,6 +75,13 @@ router.get("/stats", auth, adminAuth, async (req, res) => {
       ]);
 
     const revenueAmount = totalRevenue.length > 0 ? totalRevenue[0].total : 0;
+
+    console.log("📊 Stats calculation:");
+    console.log("- Total Orders:", totalOrders);
+    console.log("- Revenue Query Result:", totalRevenue);
+    console.log("- Calculated Revenue:", revenueAmount);
+    console.log("- Pending Orders:", pendingOrders);
+    console.log("- Total Products:", totalProducts);
 
     // Get monthly revenue for the last 6 months
     const sixMonthsAgo = new Date();
@@ -224,6 +156,106 @@ router.get("/stats", auth, adminAuth, async (req, res) => {
     });
   } catch (error) {
     console.error("Error fetching admin stats:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// GET /api/admin/orders/:id - Get single order (admin only)
+router.get("/:id", auth, adminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await Order.findById(id)
+      .populate("user", "firstName lastName name email phone")
+      .populate("items.product", "name price images sku");
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Calculate derived fields
+    const orderWithCalculations = {
+      ...order.toObject(),
+      subtotal: order.items.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      ),
+      itemCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
+    };
+
+    res.json({
+      success: true,
+      order: orderWithCalculations,
+    });
+  } catch (error) {
+    console.error("Error fetching order:", error);
+
+    // Handle invalid ObjectId
+    if (error.name === "CastError") {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid order ID format",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+});
+
+// PUT /api/admin/orders/:id/status - Update order status (admin only)
+router.put("/:id/status", auth, adminAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // Validate status
+    const validStatuses = [
+      "pending",
+      "confirmed",
+      "shipped",
+      "delivered",
+      "cancelled",
+    ];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid status",
+      });
+    }
+
+    const order = await Order.findById(id);
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    // Update order status
+    order.status = status;
+    await order.save();
+
+    // Populate the updated order for response
+    const updatedOrder = await Order.findById(id)
+      .populate("user", "name email")
+      .populate("items.product", "name price images");
+
+    res.json({
+      success: true,
+      message: "Order status updated successfully",
+      order: updatedOrder,
+    });
+  } catch (error) {
+    console.error("Error updating order status:", error);
     res.status(500).json({
       success: false,
       message: "Internal server error",

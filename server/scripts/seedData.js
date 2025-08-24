@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 const User = require("../models/User");
 const Product = require("../models/Product");
+const Order = require("../models/Order");
 require("dotenv").config();
 
 const seedData = async () => {
@@ -15,6 +16,7 @@ const seedData = async () => {
     // Clear existing data
     await User.deleteMany({});
     await Product.deleteMany({});
+    await Order.deleteMany({});
     console.log("Cleared existing data");
 
     // Create sellers (let the User model handle password hashing)
@@ -395,6 +397,108 @@ const seedData = async () => {
     await User.create(adminUser);
     console.log("Admin user created with email:", adminUser.email);
 
+    // Create sample orders for testing revenue calculation
+    const sampleCustomer = await User.create({
+      firstName: "John",
+      lastName: "Doe",
+      email: "customer@test.com",
+      phone: "+8801999999999",
+      password: "customer123",
+      role: "user",
+    });
+
+    // Create sample orders
+    const sampleOrders = [
+      {
+        user: sampleCustomer._id,
+        items: [
+          {
+            product: createdProducts[0]._id,
+            quantity: 2,
+            price: createdProducts[0].price,
+          },
+          {
+            product: createdProducts[1]._id,
+            quantity: 1,
+            price: createdProducts[1].price,
+          },
+        ],
+        totalAmount: createdProducts[0].price * 2 + createdProducts[1].price,
+        shippingAddress: {
+          firstName: "John",
+          lastName: "Doe",
+          street: "123 Test Street",
+          city: "Dhaka",
+          state: "Dhaka",
+          zipCode: "1000",
+          country: "Bangladesh",
+          phone: "+8801999999999",
+          email: "customer@test.com",
+        },
+        status: "delivered",
+        paymentStatus: "paid",
+        paymentMethod: "card",
+        transactionId: "txn_" + Date.now(),
+        orderNumber: "ORD-" + Date.now(),
+      },
+      {
+        user: sampleCustomer._id,
+        items: [
+          {
+            product: createdProducts[2]._id,
+            quantity: 1,
+            price: createdProducts[2].price,
+          },
+        ],
+        totalAmount: createdProducts[2].price,
+        shippingAddress: {
+          firstName: "John",
+          lastName: "Doe",
+          street: "123 Test Street",
+          city: "Dhaka",
+          state: "Dhaka",
+          zipCode: "1000",
+          country: "Bangladesh",
+          phone: "+8801999999999",
+          email: "customer@test.com",
+        },
+        status: "confirmed",
+        paymentStatus: "paid",
+        paymentMethod: "cod",
+        transactionId: "txn_" + (Date.now() + 1),
+        orderNumber: "ORD-" + (Date.now() + 1),
+      },
+      {
+        user: sampleCustomer._id,
+        items: [
+          {
+            product: createdProducts[3]._id,
+            quantity: 3,
+            price: createdProducts[3].price,
+          },
+        ],
+        totalAmount: createdProducts[3].price * 3,
+        shippingAddress: {
+          firstName: "John",
+          lastName: "Doe",
+          street: "123 Test Street",
+          city: "Dhaka",
+          state: "Dhaka",
+          zipCode: "1000",
+          country: "Bangladesh",
+          phone: "+8801999999999",
+          email: "customer@test.com",
+        },
+        status: "pending",
+        paymentStatus: "pending",
+        paymentMethod: "mobile_banking",
+        orderNumber: "ORD-" + (Date.now() + 2),
+      },
+    ];
+
+    const createdOrders = await Order.insertMany(sampleOrders);
+    console.log("Sample orders created:", createdOrders.length);
+
     console.log("✅ Seed data created successfully!");
     console.log("📊 Summary:");
     console.log(`- ${createdSellers.length} sellers created`);
@@ -412,6 +516,8 @@ const seedData = async () => {
       `  • ${products.filter((p) => p.category === "watch").length} watches`
     );
     console.log("- 1 admin user created");
+    console.log("- 1 customer user created");
+    console.log(`- ${createdOrders.length} sample orders created`);
     console.log("");
     console.log("🔑 Admin Login Credentials:");
     console.log(`Email: ${process.env.ADMIN_EMAIL || "admin@arjo.com"}`);

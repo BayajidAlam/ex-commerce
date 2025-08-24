@@ -1,51 +1,51 @@
-'use client'
+"use client";
 
-import { useFormState } from 'react-dom'
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Eye, EyeOff, Loader2 } from 'lucide-react'
-import { registerAction } from '@/lib/actions/auth'
+import { useFormState } from "react-dom";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
+import { registerAction } from "@/lib/actions/auth";
 
 export function RegisterForm() {
-  const router = useRouter()
-  const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [isPending, setIsPending] = useState(false)
-  
+  const router = useRouter();
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+
   const [state, formAction] = useFormState(registerAction, {
     success: false,
-    message: ''
-  })
+    message: "",
+  });
 
   // Handle successful registration
   useEffect(() => {
-    if (state.success) {
+    if (state?.success) {
       // Redirect after successful registration
-      router.push('/')
-      router.refresh() // Refresh to update server components
+      router.push("/");
+      router.refresh(); // Refresh to update server components
     }
-  }, [state.success, router])
+  }, [state?.success, router]);
 
   const handleSubmit = async (formData: FormData) => {
-    setIsPending(true)
-    formAction(formData)
-    setIsPending(false)
-  }
+    setIsPending(true);
+    formAction(formData);
+    setIsPending(false);
+  };
 
   return (
     <form action={handleSubmit} className="space-y-4">
       {/* Error Message */}
-      {!state.success && state.message && (
+      {!state?.success && state?.message && (
         <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-md">
           {state.message}
         </div>
       )}
 
       {/* Success Message */}
-      {state.success && state.message && (
+      {state?.success && state?.message && (
         <div className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-md">
           {state.message}
         </div>
@@ -117,7 +117,11 @@ export function RegisterForm() {
             onClick={() => setShowPassword(!showPassword)}
             disabled={isPending}
           >
-            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>
@@ -141,7 +145,11 @@ export function RegisterForm() {
             onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             disabled={isPending}
           >
-            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            {showConfirmPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )}
           </Button>
         </div>
       </div>
@@ -153,9 +161,9 @@ export function RegisterForm() {
             Creating account...
           </>
         ) : (
-          'Create Account'
+          "Create Account"
         )}
       </Button>
     </form>
-  )
+  );
 }

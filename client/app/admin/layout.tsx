@@ -7,8 +7,8 @@ export default function AdminLayout({
 }) {
   return (
     <AdminGuard>
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto">{children}</div>
+      <div className="min-h-screen ">
+        <div className="mx-auto">{children}</div>
       </div>
     </AdminGuard>
   );
