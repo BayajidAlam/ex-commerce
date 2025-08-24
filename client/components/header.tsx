@@ -10,7 +10,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Search, ShoppingCart, Heart, User, LogOut } from "lucide-react";
+import { Search, ShoppingCart, User, LogOut, Settings } from "lucide-react";
 import { useCartStore, useAuthStore } from "@/lib/store";
 import { logoutAction } from "@/lib/actions/auth";
 import Link from "next/link";
@@ -113,11 +113,6 @@ export default function Header() {
               </div>
             </form>
 
-            {/* Wishlist */}
-            <Button variant="ghost" size="icon">
-              <Heart className="h-5 w-5" />
-            </Button>
-
             {/* Cart */}
             <Link href="/cart">
               <Button variant="ghost" size="icon" className="relative">
@@ -143,27 +138,40 @@ export default function Header() {
                     <User className="mr-2 h-4 w-4" />
                     {user.firstName} {user.lastName}
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link
-                      href="/dashboard"
-                      className="flex items-center w-full"
-                    >
-                      <User className="mr-2 h-4 w-4" />
-                      Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/orders" className="flex items-center w-full">
-                      <ShoppingCart className="mr-2 h-4 w-4" />
-                      My Orders
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link href="/wishlist" className="flex items-center w-full">
-                      <Heart className="mr-2 h-4 w-4" />
-                      Wishlist
-                    </Link>
-                  </DropdownMenuItem>
+
+                  {/* Show Admin Dashboard for admin users */}
+                  {user.role === "admin" ? (
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/admin/dashboard"
+                        className="flex items-center w-full"
+                      >
+                        <Settings className="mr-2 h-4 w-4" />
+                        Admin Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem asChild>
+                      <Link
+                        href="/dashboard"
+                        className="flex items-center w-full"
+                      >
+                        <User className="mr-2 h-4 w-4" />
+                        My Profile
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+
+                  {/* Show My Orders only for non-admin users */}
+                  {user.role !== "admin" && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/orders" className="flex items-center w-full">
+                        <ShoppingCart className="mr-2 h-4 w-4" />
+                        My Orders
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
+
                   <DropdownMenuItem
                     onClick={handleLogout}
                     className="text-red-600 focus:text-red-600 focus:bg-red-50 cursor-pointer"

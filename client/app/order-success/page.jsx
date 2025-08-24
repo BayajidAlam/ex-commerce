@@ -355,40 +355,57 @@ export default function OrderSuccessPage() {
             </Card>
           ) : (
             <div className="space-y-6">
-              {/* Success Header */}
+              {/* Back Button */}
+              <div className="flex items-center gap-4">
+                <Link href="/">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowRight className="h-4 w-4 rotate-180" />
+                    Back to Home
+                  </Button>
+                </Link>
+                <div className="h-px bg-gray-200 flex-1"></div>
+              </div>
+
+              {/* Status Header */}
               <Card
                 className={`border-0 shadow-xl bg-gradient-to-r ${
                   getStatusDisplay(orderData.status).bgColor
                 } text-white overflow-hidden`}
               >
-                <CardContent className="p-8 text-center relative">
+                <CardContent className="p-4 text-center relative">
                   <div className="absolute inset-0 bg-black/10"></div>
                   <div className="relative z-10">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-full mb-6 animate-pulse">
+                    <div className="inline-flex items-center justify-center w-12 h-12 bg-white/20 rounded-full mb-3">
                       {(() => {
                         const StatusIcon = getStatusDisplay(
                           orderData.status
                         ).icon;
-                        return <StatusIcon className="h-12 w-12" />;
+                        return <StatusIcon className="h-6 w-6" />;
                       })()}
                     </div>
-                    <h1 className="text-4xl font-bold mb-4">
+                    <h1 className="text-lg sm:text-xl font-bold mb-2">
                       {getStatusDisplay(orderData.status).title}
                     </h1>
-                    <p className="text-xl text-white/90 mb-6">
+                    <p className="text-xs sm:text-sm text-white/90 mb-3">
                       {getStatusDisplay(orderData.status).message}
                     </p>
-                    <div className="flex items-center justify-center gap-2 text-lg">
-                      <span>Order #</span>
+                    <div className="flex flex-col sm:flex-row items-center justify-center gap-2 text-xs sm:text-sm">
+                      <span className="text-white/80">Order #</span>
                       <Badge
-                        className="bg-white/20 text-white border-white/30 text-lg px-4 py-1 cursor-pointer hover:bg-white/30 transition-colors"
+                        className="bg-white/20 text-white border-white/30 text-xs px-2 py-1 cursor-pointer hover:bg-white/30 transition-colors break-all font-mono"
                         onClick={copyOrderNumber}
                       >
-                        {orderData.orderNumber}
+                        <span className="font-mono">
+                          {orderData.orderNumber}
+                        </span>
                         {copied ? (
-                          <Check className="ml-2 h-4 w-4" />
+                          <Check className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                         ) : (
-                          <Copy className="ml-2 h-4 w-4" />
+                          <Copy className="ml-1 sm:ml-2 h-3 w-3 sm:h-4 sm:w-4 flex-shrink-0" />
                         )}
                       </Badge>
                     </div>

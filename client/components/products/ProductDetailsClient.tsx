@@ -317,7 +317,15 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
               </h3>
               <div className="py-3 px-4 border border-gray-200 rounded-lg bg-gray-50">
                 <p className="text-lg font-medium text-gray-800">
-                  {product.dimensions || "22cm x 20cm x 12cm"}
+                  {product.dimensions && typeof product.dimensions === "object"
+                    ? `${product.dimensions.length || 22}${
+                        product.dimensions.unit || "cm"
+                      } × ${product.dimensions.width || 20}${
+                        product.dimensions.unit || "cm"
+                      } × ${product.dimensions.height || 12}${
+                        product.dimensions.unit || "cm"
+                      }`
+                    : product.dimensions || "22cm × 20cm × 12cm"}
                 </p>
                 <p className="text-sm text-gray-600 mt-1">
                   Length × Width × Height
