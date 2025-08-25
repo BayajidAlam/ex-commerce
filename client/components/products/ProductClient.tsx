@@ -55,16 +55,22 @@ export function ProductsClient({
     initialFilters.maxPrice || 5000,
   ]);
 
-  // Categories mapping
-  const categories = [
-    { id: "casual", label: "Casual" },
-    { id: "formal", label: "Formal" },
-    { id: "traditional", label: "Traditional" },
-    { id: "bag", label: "Bags" },
-    { id: "jewellry", label: "Jewelry" },
-    { id: "glass", label: "Glasses" },
-    { id: "watch", label: "Watches" },
-  ];
+  // Categories mapping - use from props or fallback to hardcoded
+  const categories =
+    initialCategories && initialCategories.length > 0
+      ? initialCategories.map((cat: any) => ({
+          id: cat.id,
+          label: cat.name || cat.label,
+        }))
+      : [
+          { id: "casual", label: "Casual" },
+          { id: "formal", label: "Formal" },
+          { id: "traditional", label: "Traditional" },
+          { id: "bag", label: "Bags" },
+          { id: "jewellry", label: "Jewelry" },
+          { id: "glass", label: "Glasses" },
+          { id: "watch", label: "Watches" },
+        ];
 
   // Fetch products from API (direct backend call)
   const fetchProducts = async (params: Record<string, string | undefined>) => {
@@ -178,10 +184,64 @@ export function ProductsClient({
     router.push(newUrl, { scroll: false });
   };
 
-  // Handle search input change
+  // Handle search input change - only update URL, let URL effect handle the fetch
   useEffect(() => {
-    debouncedSearch(searchQuery);
-  }, [searchQuery, debouncedSearch]);
+    // Only update URL if search query is different from URL param
+    const currentSearch = searchParams.get("search") || "";
+    if (searchQuery !== currentSearch) {
+      const timeoutId = setTimeout(() => {
+        const params = new URLSearchParams(searchParams.toString());
+        if (searchQuery) {
+          params.set("search", searchQuery);
+        } else {
+          params.delete("search");
+        }
+        params.set("page", "1"); // Reset to first page on search
+
+        const newUrl = params.toString()
+          ? `/products?${params.toString()}`
+          : "/products";
+        router.push(newUrl, { scroll: false });
+      }, 500); // Debounce delay
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [searchQuery, searchParams, router]);
+
+  // Listen for URL parameter changes and update state + refetch data
+  useEffect(() => {
+    const category = searchParams.get("category");
+    const search = searchParams.get("search");
+    const page = searchParams.get("page");
+    const sortBy = searchParams.get("sortBy");
+    const minPrice = searchParams.get("minPrice");
+    const maxPrice = searchParams.get("maxPrice");
+
+    // Update local state to match URL params
+    setSelectedCategories(category ? [category] : []);
+    setSearchQuery(search || "");
+    setSortBy(sortBy || "name");
+
+    if (minPrice || maxPrice) {
+      setPriceRange([
+        minPrice ? parseFloat(minPrice) : 0,
+        maxPrice ? parseFloat(maxPrice) : 5000,
+      ]);
+    }
+
+    // Fetch products with current URL parameters
+    const fetchParams = {
+      category: category || undefined,
+      search: search || undefined,
+      page: page || "1",
+      limit: "6",
+      sortBy: sortBy || undefined,
+      minPrice: minPrice || undefined,
+      maxPrice: maxPrice || undefined,
+    };
+
+    fetchProducts(fetchParams);
+  }, [searchParams]); // Re-run when URL parameters change
 
   // Handle category change
   const handleCategoryChange = (categoryId: string, checked: boolean) => {
@@ -193,28 +253,20 @@ export function ProductsClient({
       newCategories = newCategories.filter((id) => id !== categoryId);
     }
 
-    setSelectedCategories(newCategories);
+    // Update URL parameters instead of directly calling API
+    const params = new URLSearchParams(searchParams.toString());
 
-    // Build complete params object
-    const newParams = {
-      search: searchQuery || undefined,
-      category: newCategories[0] || undefined, // Backend expects single category
-      minPrice: priceRange[0] > 0 ? priceRange[0].toString() : undefined,
-      maxPrice: priceRange[1] < 5000 ? priceRange[1].toString() : undefined,
-      sortBy: getSortField(),
-      sortOrder: getSortOrder(),
-      page: "1", // Reset to first page
-    };
+    if (newCategories.length > 0) {
+      params.set("category", newCategories[0]); // Backend expects single category
+    } else {
+      params.delete("category");
+    }
+    params.set("page", "1"); // Reset to first page
 
-    console.log("🏷️ Category changed:", {
-      categoryId,
-      checked,
-      newCategories,
-      newParams,
-    });
-
-    fetchProducts(newParams);
-    updateURL(newParams);
+    const newUrl = params.toString()
+      ? `/products?${params.toString()}`
+      : "/products";
+    router.push(newUrl, { scroll: false });
   };
 
   // Helper function to get sort field
@@ -233,63 +285,62 @@ export function ProductsClient({
 
   // Handle sort change
   const handleSortChange = (newSortBy: string) => {
-    setSortBy(newSortBy);
+    // Update URL parameters instead of directly calling API
+    const params = new URLSearchParams(searchParams.toString());
 
-    const newParams = {
-      search: searchQuery || undefined,
-      category: selectedCategories[0] || undefined,
-      minPrice: priceRange[0] > 0 ? priceRange[0].toString() : undefined,
-      maxPrice: priceRange[1] < 5000 ? priceRange[1].toString() : undefined,
-      sortBy: newSortBy === "name" ? undefined : "price",
-      sortOrder: newSortBy.includes("high")
-        ? "desc"
-        : newSortBy.includes("low")
-        ? "asc"
-        : undefined,
-      page: "1",
-    };
+    if (newSortBy !== "name") {
+      params.set("sortBy", "price");
+      if (newSortBy.includes("high")) {
+        params.set("sortOrder", "desc");
+      } else if (newSortBy.includes("low")) {
+        params.set("sortOrder", "asc");
+      }
+    } else {
+      params.delete("sortBy");
+      params.delete("sortOrder");
+    }
 
-    console.log("🔄 Sort changed:", { newSortBy, newParams });
+    params.set("page", "1"); // Reset to first page
 
-    fetchProducts(newParams);
-    updateURL(newParams);
+    const newUrl = params.toString()
+      ? `/products?${params.toString()}`
+      : "/products";
+    router.push(newUrl, { scroll: false });
   };
 
   // Handle price range change
   const handlePriceRangeChange = () => {
-    const newParams = {
-      search: searchQuery || undefined,
-      category: selectedCategories[0] || undefined,
-      minPrice: priceRange[0] > 0 ? priceRange[0].toString() : undefined,
-      maxPrice: priceRange[1] < 5000 ? priceRange[1].toString() : undefined,
-      sortBy: getSortField(),
-      sortOrder: getSortOrder(),
-      page: "1",
-    };
+    // Update URL parameters instead of directly calling API
+    const params = new URLSearchParams(searchParams.toString());
 
-    console.log("💰 Price range changed:", { priceRange, newParams });
+    if (priceRange[0] > 0) {
+      params.set("minPrice", priceRange[0].toString());
+    } else {
+      params.delete("minPrice");
+    }
 
-    fetchProducts(newParams);
-    updateURL(newParams);
+    if (priceRange[1] < 5000) {
+      params.set("maxPrice", priceRange[1].toString());
+    } else {
+      params.delete("maxPrice");
+    }
+
+    params.set("page", "1"); // Reset to first page
+
+    const newUrl = params.toString()
+      ? `/products?${params.toString()}`
+      : "/products";
+    router.push(newUrl, { scroll: false });
   };
 
   // Handle pagination
   const handlePageChange = (page: number) => {
-    const newParams = {
-      search: searchQuery || undefined,
-      category: selectedCategories[0] || undefined,
-      minPrice: priceRange[0] > 0 ? priceRange[0].toString() : undefined,
-      maxPrice: priceRange[1] < 5000 ? priceRange[1].toString() : undefined,
-      sortBy: getSortField(),
-      sortOrder: getSortOrder(),
-      page: page.toString(),
-      limit: pagination.limit.toString(),
-    };
+    // Update URL parameters instead of directly calling API
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", page.toString());
 
-    console.log("📄 Page changed:", { page, newParams });
-
-    fetchProducts(newParams);
-    updateURL(newParams);
+    const newUrl = `/products?${params.toString()}`;
+    router.push(newUrl, { scroll: false });
 
     // Scroll to top of products section
     window.scrollTo({ top: 300, behavior: "smooth" });

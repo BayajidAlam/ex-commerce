@@ -89,7 +89,6 @@ import {
   XCircle,
   RefreshCw,
   Search,
-  Search,
   Filter,
   Star,
   BarChart3,

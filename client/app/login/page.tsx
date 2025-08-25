@@ -1,20 +1,20 @@
-import { Suspense } from 'react'
-import { redirectIfAuthenticated } from '@/lib/auth'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import Link from 'next/link'
-import { LoginForm } from '@/components/auth/LoginForm'
+import { Suspense } from "react";
+import { redirectIfAuthenticated } from "@/lib/auth";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import { LoginForm } from "@/components/auth/LoginForm";
 
 // This is a server component - great for SEO!
 export default async function LoginPage({
-  searchParams
+  searchParams,
 }: {
-  searchParams: { redirect?: string }
+  searchParams: { redirect?: string };
 }) {
   // Redirect if already authenticated
-  await redirectIfAuthenticated()
+  await redirectIfAuthenticated();
 
   // Get redirect URL from search params
-  const redirectTo = searchParams.redirect || '/'
+  const redirectTo = searchParams.redirect || "/";
 
   return (
     <div className="min-h-screen bg-gray-50 flex justify-center items-center">
@@ -29,11 +29,22 @@ export default async function LoginPage({
               <Suspense fallback={<div>Loading...</div>}>
                 <LoginForm redirectTo={redirectTo} />
               </Suspense>
-              
-              <div className="mt-6 text-center">
+
+              <div className="mt-6 text-center space-y-3">
                 <p className="text-sm text-gray-600">
-                  Don't have an account?{' '}
-                  <Link href="/register" className="text-primary hover:underline">
+                  <Link
+                    href="/forgot-password"
+                    className="text-primary hover:underline"
+                  >
+                    Forgot your password?
+                  </Link>
+                </p>
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{" "}
+                  <Link
+                    href="/register"
+                    className="text-primary hover:underline"
+                  >
                     Sign up
                   </Link>
                 </p>
@@ -43,11 +54,12 @@ export default async function LoginPage({
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 // SEO metadata
 export const metadata = {
-  title: 'Login - ARJO',
-  description: 'Sign in to your ARJO account to access your orders, wishlist, and more.',
-}
+  title: "Login - ARJO",
+  description:
+    "Sign in to your ARJO account to access your orders, wishlist, and more.",
+};

@@ -3,6 +3,7 @@
 import { useFormState } from "react-dom";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -67,7 +68,15 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
       </div>
 
       <div>
-        <Label htmlFor="password">Password</Label>
+        <div className="flex items-center justify-between">
+          <Label htmlFor="password">Password</Label>
+          <Link
+            href="/forgot-password"
+            className="text-sm text-primary hover:underline"
+          >
+            Forgot password?
+          </Link>
+        </div>
         <div className="relative">
           <Input
             id="password"

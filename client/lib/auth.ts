@@ -16,6 +16,7 @@ export interface LoginResponse {
   token?: string;
   user?: User;
   errors?: Array<{ field: string; message: string }>;
+  resetToken?: string; // For development/testing purposes
 }
 
 // API base URL

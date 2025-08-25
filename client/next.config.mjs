@@ -8,7 +8,22 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    domains: ["i.ibb.co", "res.cloudinary.com", "localhost"],
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "i.ibb.co",
+      },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+      },
+      {
+        protocol: "http",
+        hostname: "localhost",
+      },
+    ],
   },
-}
+};
 
-export default nextConfig
+export default nextConfig;

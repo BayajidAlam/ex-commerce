@@ -13,6 +13,7 @@ import {
 import { ShoppingCart, User, LogOut, Settings } from "lucide-react";
 import { useCartStore, useAuthStore } from "@/lib/store";
 import { logoutAction } from "@/lib/actions/auth";
+import { getCategoriesClient, type Category } from "@/lib/api/categories";
 import Link from "next/link";
 import SearchDropdown from "./SearchDropdown";
 
@@ -21,9 +22,23 @@ export default function Header() {
   const pathname = usePathname();
   const { items, getTotalItems } = useCartStore();
   const { user, isAuthenticated } = useAuthStore(); // Get user from Zustand store
+  const [categories, setCategories] = useState<Category[]>([]);
 
   // Check if we're in admin dashboard
   const isAdminDashboard = pathname?.startsWith("/admin/dashboard");
+
+  // Fetch categories on component mount
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const categoriesData = await getCategoriesClient();
+        setCategories(categoriesData);
+      } catch (error) {
+        console.error("Failed to fetch categories:", error);
+      }
+    };
+    fetchCategories();
+  }, []);
 
   // Calculate total items directly from items array - this will update when items change
   const totalItems = items.reduce(
@@ -78,17 +93,21 @@ export default function Header() {
               Home
             </Link>
             <Link
-              href="/products"
+              href="/products?page=1"
               className="text-gray-700 hover:text-gray-900"
             >
               Products
             </Link>
-            <Link
-              href="/categories"
-              className="text-gray-700 hover:text-gray-900"
-            >
-              Categories
-            </Link>
+            {/* Dynamic Category Links */}
+            {categories.map((category) => (
+              <Link
+                key={category.id}
+                href={`/products?category=${category.id}&page=1`}
+                className="text-gray-700 hover:text-gray-900 capitalize"
+              >
+                {category.name}
+              </Link>
+            ))}
             <Link href="/about" className="text-gray-700 hover:text-gray-900">
               About
             </Link>
