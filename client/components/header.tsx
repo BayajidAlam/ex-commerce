@@ -10,12 +10,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ShoppingCart, User, LogOut, Settings } from "lucide-react";
+import {
+  ShoppingCart,
+  User,
+  LogOut,
+  Settings,
+  Image as ImageIcon,
+} from "lucide-react";
 import { useCartStore, useAuthStore } from "@/lib/store";
 import { logoutAction } from "@/lib/actions/auth";
 import { getCategoriesClient, type Category } from "@/lib/api/categories";
 import Link from "next/link";
 import SearchDropdown from "./SearchDropdown";
+
+// Site settings interface
+interface SiteSettings {
+  siteName: string;
+  logoUrl: string | null;
+  faviconUrl: string | null;
+  description: string;
+}
 
 export default function Header() {
   const router = useRouter();
@@ -23,9 +37,28 @@ export default function Header() {
   const { items, getTotalItems } = useCartStore();
   const { user, isAuthenticated } = useAuthStore(); // Get user from Zustand store
   const [categories, setCategories] = useState<Category[]>([]);
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
 
   // Check if we're in admin dashboard
   const isAdminDashboard = pathname?.startsWith("/admin/dashboard");
+
+  // Fetch site settings
+  useEffect(() => {
+    const fetchSiteSettings = async () => {
+      try {
+        const API_BASE =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const response = await fetch(`${API_BASE}/api/site-settings`);
+        if (response.ok) {
+          const data = await response.json();
+          setSiteSettings(data.siteSettings);
+        }
+      } catch (error) {
+        console.error("Failed to fetch site settings:", error);
+      }
+    };
+    fetchSiteSettings();
+  }, []);
 
   // Fetch categories on component mount
   useEffect(() => {
@@ -82,8 +115,18 @@ export default function Header() {
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-2xl font-bold text-gray-900">
-              ARJO
+            <Link href="/" className="flex items-center">
+              {siteSettings?.logoUrl ? (
+                <img
+                  src={siteSettings.logoUrl}
+                  alt={siteSettings.siteName || "ARJO"}
+                  className="h-8 w-auto max-w-[120px] object-contain"
+                />
+              ) : (
+                <span className="text-2xl font-bold text-gray-900">
+                  {siteSettings?.siteName || "ARJO"}
+                </span>
+              )}
             </Link>
           </div>
 
@@ -155,15 +198,35 @@ export default function Header() {
 
                   {/* Show Admin Dashboard for admin users */}
                   {user.role === "admin" ? (
-                    <DropdownMenuItem asChild>
-                      <Link
-                        href="/admin/dashboard"
-                        className="flex items-center w-full"
-                      >
-                        <Settings className="mr-2 h-4 w-4" />
-                        Admin Dashboard
-                      </Link>
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/admin/dashboard"
+                          className="flex items-center w-full"
+                        >
+                          <Settings className="mr-2 h-4 w-4" />
+                          Admin Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/admin/site-settings"
+                          className="flex items-center w-full"
+                        >
+                          <Settings className="mr-2 h-4 w-4" />
+                          Site Settings
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link
+                          href="/admin/banners"
+                          className="flex items-center w-full"
+                        >
+                          <ImageIcon className="mr-2 h-4 w-4" />
+                          Banner Management
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
                   ) : (
                     <DropdownMenuItem asChild>
                       <Link

@@ -78,6 +78,7 @@ import {
   Image as ImageIcon,
   X,
   Eye,
+  EyeOff,
   Loader2,
   ShoppingBag,
   Users,

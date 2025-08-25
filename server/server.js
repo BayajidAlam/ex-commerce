@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 // Import routes
@@ -12,11 +13,13 @@ const userRoutes = require("./routes/users");
 const orderRoutes = require("./routes/orders");
 const categoryRoutes = require("./routes/categories");
 const uploadRoutes = require("./routes/upload");
+const siteSettingsRoutes = require("./routes/siteSettings");
 
 // Admin routes
 const adminProductRoutes = require("./routes/admin/products");
 const adminOrderRoutes = require("./routes/admin/orders");
 const adminUserRoutes = require("./routes/admin/users");
+const adminSiteSettingsRoutes = require("./routes/admin/siteSettings");
 
 const app = express();
 
@@ -39,15 +42,12 @@ app.use("/api/", limiter);
 // Body parsing middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 // MongoDB connection
 mongoose
   .connect(
-    process.env.MONGODB_URI || "mongodb://localhost:27017/aluna-ecommerce",
-    {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    }
+    process.env.MONGODB_URI || "mongodb://localhost:27017/aluna-ecommerce"
   )
   .then(() => console.log("MongoDB connected successfully"))
   .catch((err) => console.error("MongoDB connection error:", err));
@@ -59,11 +59,13 @@ app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api", siteSettingsRoutes);
 
 // Admin routes
 app.use("/api/admin/products", adminProductRoutes);
 app.use("/api/admin/orders", adminOrderRoutes);
 app.use("/api/admin/users", adminUserRoutes);
+app.use("/api/admin", adminSiteSettingsRoutes);
 
 // Health check
 app.get("/api/health", (req, res) => {

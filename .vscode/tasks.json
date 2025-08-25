@@ -5,6 +5,9 @@
       "label": "Start Server",
       "type": "shell",
       "command": "node server.js",
+      "options": {
+        "cwd": "${workspaceFolder}/server"
+      },
       "group": "build",
       "isBackground": true
     }

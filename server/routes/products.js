@@ -87,7 +87,11 @@ router.get(
       }
 
       if (req.query.search) {
-        query.$text = { $search: req.query.search };
+        query.$or = [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { description: { $regex: req.query.search, $options: "i" } },
+          { category: { $regex: req.query.search, $options: "i" } },
+        ];
       }
 
       if (req.query.minPrice || req.query.maxPrice) {
@@ -297,6 +301,29 @@ router.get("/featured/list", async (req, res) => {
     res.json({ products });
   } catch (error) {
     res.status(500).json({ error: "Failed to fetch featured products" });
+  }
+});
+
+// Get most sold products (using rating as a proxy for sales)
+router.get("/most-sold", async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 8;
+
+    // Sort by rating and featured status to simulate most sold
+    const products = await Product.find({ isActive: true })
+      .populate("seller", "firstName lastName")
+      .sort({
+        featured: -1, // Featured products first
+        "rating.average": -1, // Then by rating
+        "rating.count": -1, // Then by number of ratings
+        createdAt: -1, // Finally by newest
+      })
+      .limit(limit);
+
+    res.json({ products });
+  } catch (error) {
+    console.error("Error fetching most sold products:", error);
+    res.status(500).json({ error: "Failed to fetch most sold products" });
   }
 });
 

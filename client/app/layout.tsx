@@ -7,8 +7,17 @@ import { ClientAuthSync } from "@/components/ClientAuthSync";
 import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
-  title: "Aluna",
-  description: "Create by Bayajid Alam Joyel",
+  title: "Aluna - Premium Fashion & Bestselling Products",
+  description:
+    "Discover premium fashion with our curated collection of watches, sunglasses, jewelry, and bags. Shop our most loved and bestselling products with fast delivery.",
+  keywords:
+    "fashion, watches, sunglasses, jewelry, bags, bestselling products, most popular items, premium accessories, loved by customers",
+  openGraph: {
+    title: "Aluna - Premium Fashion & Bestselling Products",
+    description:
+      "Discover premium fashion with our curated collection. Shop our most loved and bestselling products.",
+    type: "website",
+  },
 };
 
 export default async function RootLayout({

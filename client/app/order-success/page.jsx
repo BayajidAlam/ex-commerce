@@ -39,6 +39,25 @@ export default function OrderSuccessPage() {
   const [loading, setLoading] = useState(!!orderId);
   const [error, setError] = useState(null);
   const [copied, setCopied] = useState(false);
+  const [siteSettings, setSiteSettings] = useState(null);
+
+  // Fetch site settings
+  useEffect(() => {
+    const fetchSiteSettings = async () => {
+      try {
+        const API_BASE =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const response = await fetch(`${API_BASE}/api/site-settings`);
+        if (response.ok) {
+          const data = await response.json();
+          setSiteSettings(data.siteSettings);
+        }
+      } catch (error) {
+        console.error("Failed to fetch site settings:", error);
+      }
+    };
+    fetchSiteSettings();
+  }, []);
 
   // Default data if no order ID provided (fallback)
   const defaultOrderData = {
@@ -221,7 +240,7 @@ export default function OrderSuccessPage() {
       </head>
       <body>
         <div class="header">
-          <div class="company-name">ARJO</div>
+          <div class="company-name">${siteSettings?.siteName || "ARJO"}</div>
           <div class="invoice-title">INVOICE</div>
         </div>
 
@@ -297,7 +316,9 @@ export default function OrderSuccessPage() {
 
         <div class="footer">
           <p>Thank you for your business!</p>
-          <p>For any queries, contact us at support@arjo.com or +880 123 456 7890</p>
+          <p>For any queries, contact us at ${
+            siteSettings?.contactEmail || "support@arjo.com"
+          } or ${siteSettings?.contactPhone || "+880 123 456 7890"}</p>
         </div>
       </body>
       </html>

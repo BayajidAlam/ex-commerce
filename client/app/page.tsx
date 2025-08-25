@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useState, useEffect } from "react";
 import BannerSlider from "@/components/banner-slider";
 import { ProductCard } from "@/components/ProductCard";
 import Categories from "@/components/UI/Home/Categories";
@@ -8,9 +9,82 @@ import Link from "next/link";
 import Header from "@/components/header";
 import { useCartStore } from "@/lib/store";
 import { toast } from "sonner";
+import LovedByYouSection from "@/components/LovedByYouSection";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Site settings interface
+interface SiteSettings {
+  siteName: string;
+  logoUrl: string | null;
+  faviconUrl: string | null;
+  description: string;
+  contactEmail: string;
+  contactPhone: string;
+  address: string;
+}
+
+// Note: Since this is a client component, we can't export metadata directly
+// The metadata is handled in layout.tsx. For dynamic SEO, consider using next/head or
+// converting sections to server components
 
 export default function HomePage() {
   const { addItem } = useCartStore();
+  const [siteSettings, setSiteSettings] = useState<SiteSettings | null>(null);
+  const [recentProducts, setRecentProducts] = useState<any[]>([]);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+
+  // Fetch site settings
+  useEffect(() => {
+    const fetchSiteSettings = async () => {
+      try {
+        const API_BASE =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const response = await fetch(`${API_BASE}/api/site-settings`);
+        if (response.ok) {
+          const data = await response.json();
+          setSiteSettings(data.siteSettings);
+        }
+      } catch (error) {
+        console.error("Failed to fetch site settings:", error);
+      }
+    };
+    fetchSiteSettings();
+  }, []);
+
+  // Fetch recent products
+  useEffect(() => {
+    const fetchRecentProducts = async () => {
+      try {
+        const API_BASE =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const response = await fetch(
+          `${API_BASE}/api/products?limit=4&sortBy=createdAt&sortOrder=desc`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          // Transform products to match the expected format
+          const transformedProducts = data.products.map((product: any) => ({
+            id: product._id,
+            name: product.name,
+            price: `৳${product.price}`,
+            image:
+              product.images && product.images.length > 0
+                ? product.images[0].url
+                : "/placeholder.jpg",
+            category: product.category,
+          }));
+          setRecentProducts(transformedProducts);
+        } else {
+          console.error("Failed to fetch recent products");
+        }
+      } catch (error) {
+        console.error("Error fetching recent products:", error);
+      } finally {
+        setLoadingProducts(false);
+      }
+    };
+    fetchRecentProducts();
+  }, []);
 
   const handleAddToCart = (product: any) => {
     const cartItem = {
@@ -32,83 +106,6 @@ export default function HomePage() {
       className: "border-green-200 bg-green-50",
     });
   };
-  const seasonalProducts = [
-    {
-      id: 9,
-      name: "Pink Casual Shirt",
-      price: "৳1,600",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-    {
-      id: 10,
-      name: "Light Green Shirt",
-      price: "৳1,700",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-    {
-      id: 11,
-      name: "Striped Formal",
-      price: "৳1,900",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-    {
-      id: 12,
-      name: "Beige Casual",
-      price: "৳1,500",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-    {
-      id: 13,
-      name: "Check Pattern",
-      price: "৳1,800",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-    {
-      id: 14,
-      name: "Cream Formal",
-      price: "৳2,000",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-    {
-      id: 16,
-      name: "Cream Formal",
-      price: "৳2,000",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-    {
-      id: 17,
-      name: "Cream Formal",
-      price: "৳2,000",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-  ];
-
-  const recentProducts = [
-    {
-      id: 21,
-      name: "Yellow Casual Shirt",
-      price: "৳1,400",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-    {
-      id: 22,
-      name: "Light Blue Shirt",
-      price: "৳1,600",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-    {
-      id: 23,
-      name: "Red Check Shirt",
-      price: "৳1,700",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-    {
-      id: 24,
-      name: "Beige Casual",
-      price: "৳1,500",
-      image: "https://i.ibb.co.com/PzNwVgZm/Aluna-250103.jpg",
-    },
-  ];
 
   const products = [
     {
@@ -185,51 +182,8 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Seasonal Wear Section */}
-      <section className="py-20 bg-gray-300">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-8">Loved by you</h2>
-
-          {/* Product Grid */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
-            {seasonalProducts.map((product, i) => (
-              <ProductCard
-                product={product}
-                key={i}
-                onAddToCart={handleAddToCart}
-                showAddToCart={true}
-              />
-            ))}
-          </div>
-
-          {/* Large Bottom Images */}
-          {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-            <div className="relative aspect-[16/9] rounded-lg overflow-hidden">
-              <Image
-                src="/placeholder.svg?height=300&width=500&text=Collection+Image+1"
-                alt="Collection"
-                fill
-                className="object-cover"
-              />
-            </div>
-            <div className="relative aspect-[16/9] rounded-lg overflow-hidden">
-              <Image
-                src="/placeholder.svg?height=300&width=500&text=Collection+Image+2"
-                alt="Collection"
-                fill
-                className="object-cover"
-              />
-            </div>
-          </div> */}
-        </div>
-
-        <div className="text-center">
-          {" "}
-          <button className="text-center text-lg bg-white px-10 py-2 rounded-md">
-            See All
-          </button>
-        </div>
-      </section>
+      {/* Loved by You Section */}
+      <LovedByYouSection />
 
       {/* Category */}
 
@@ -267,14 +221,30 @@ export default function HomePage() {
             <div className="mt-2 w-36 h-1 rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-red-500 shadow-md"></div>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {recentProducts.slice(0, 4).map((product, i) => (
-              <ProductCard
-                product={product}
-                key={i}
-                onAddToCart={handleAddToCart}
-                showAddToCart={true}
-              />
-            ))}
+            {loadingProducts ? (
+              // Loading skeleton
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="space-y-3">
+                  <Skeleton className="aspect-square rounded-lg" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-3/4" />
+                </div>
+              ))
+            ) : recentProducts.length > 0 ? (
+              recentProducts.map((product, i) => (
+                <ProductCard
+                  product={product}
+                  key={product.id || i}
+                  onAddToCart={handleAddToCart}
+                  showAddToCart={true}
+                />
+              ))
+            ) : (
+              // No products found
+              <div className="col-span-2 md:col-span-4 text-center py-8">
+                <p className="text-gray-500">No recent products found.</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -284,9 +254,22 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-              <h3 className="text-xl font-bold mb-4">ARJO</h3>
+              <div className="mb-4">
+                {siteSettings?.logoUrl ? (
+                  <img
+                    src={siteSettings.logoUrl}
+                    alt={siteSettings.siteName || "ARJO"}
+                    className="h-8 w-auto max-w-[120px] object-contain brightness-0 invert"
+                  />
+                ) : (
+                  <h3 className="text-xl font-bold">
+                    {siteSettings?.siteName || "ARJO"}
+                  </h3>
+                )}
+              </div>
               <p className="text-gray-400 text-sm">
-                Premium quality men's fashion and traditional wear.
+                {siteSettings?.description ||
+                  "Premium quality men's fashion and traditional wear."}
               </p>
             </div>
             <div>
@@ -342,14 +325,17 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold mb-4">Contact Info</h4>
               <div className="space-y-2 text-sm text-gray-400">
-                <p>Phone: +880 123 456 789</p>
-                <p>Email: info@arjo.com</p>
-                <p>Address: Dhaka, Bangladesh</p>
+                <p>Phone: {siteSettings?.contactPhone || "+880 123 456 789"}</p>
+                <p>Email: {siteSettings?.contactEmail || "info@arjo.com"}</p>
+                <p>Address: {siteSettings?.address || "Dhaka, Bangladesh"}</p>
               </div>
             </div>
           </div>
           <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-            <p>&copy; 2024 ARJO. All rights reserved.</p>
+            <p>
+              &copy; 2024 {siteSettings?.siteName || "ARJO"}. All rights
+              reserved.
+            </p>
           </div>
         </div>
       </footer>

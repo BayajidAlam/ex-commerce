@@ -21,6 +21,14 @@ export interface Product {
   featured?: boolean;
   createdAt: string;
   updatedAt: string;
+  originalPrice?: number;
+  discount?: any;
+  dimensions?: any;
+  discountedPrice?: number;
+  rating?: {
+    average: number;
+    count: number;
+  };
 }
 
 export interface ProductsResponse {
@@ -146,9 +154,10 @@ export async function getCategories() {
 // Transform backend product to frontend format - FIXED VERSION
 export function transformProduct(product: Product) {
   // Extract image URLs safely
-  const imageUrls = product.images && product.images.length > 0 
-    ? product.images.map((img) => img.url).filter(url => url) // Remove any undefined URLs
-    : [];
+  const imageUrls =
+    product.images && product.images.length > 0
+      ? product.images.map((img) => img.url).filter((url) => url) // Remove any undefined URLs
+      : [];
 
   // Get main image (first valid image or placeholder)
   const mainImage = imageUrls.length > 0 ? imageUrls[0] : "/placeholder.svg";
@@ -176,4 +185,57 @@ export function transformProduct(product: Product) {
     sku: product.sku,
     featured: product.featured || false,
   };
+}
+
+// Get most sold products (server-side)
+export async function getMostSoldProducts(
+  limit: number = 8
+): Promise<Product[]> {
+  try {
+    const response = await fetch(
+      `${API_BASE}/api/products/most-sold?limit=${limit}`,
+      {
+        cache: "no-store", // Always fetch fresh data for most sold products
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.products || [];
+  } catch (error) {
+    console.error("❌ Error fetching most sold products:", error);
+    return [];
+  }
+}
+
+// Get most sold products (client-side)
+export async function getMostSoldProductsClient(
+  limit: number = 8
+): Promise<Product[]> {
+  try {
+    const response = await fetch(
+      `${API_BASE}/api/products/most-sold?limit=${limit}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data.products || [];
+  } catch (error) {
+    console.error("❌ Error fetching most sold products:", error);
+    return [];
+  }
 }

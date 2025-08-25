@@ -11,7 +11,7 @@ interface Product {
   id: string;
   name: string;
   price: number;
-  images: string[];
+  image: string | null;
   category: string;
 }
 
@@ -58,13 +58,14 @@ export default function SearchDropdown({
         try {
           const response = await fetch(
             `${
-              process.env.NEXT_PUBLIC_API_URL
-            }/api/products/search?q=${encodeURIComponent(query)}&limit=5`
+              process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"
+            }/api/products/search/autocomplete?q=${encodeURIComponent(query)}`
           );
           if (response.ok) {
             const data = await response.json();
-            setSuggestions(data.products || []);
-            setIsOpen(data.products?.length > 0);
+            setSuggestions(data.suggestions || []);
+            // Always show dropdown if user has typed something and we got a response
+            setIsOpen(true);
           } else {
             setSuggestions([]);
             setIsOpen(false);
@@ -150,9 +151,9 @@ export default function SearchDropdown({
                   className="flex items-center p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                 >
                   <div className="flex-shrink-0 w-12 h-12 bg-gray-200 rounded-md overflow-hidden mr-3">
-                    {product.images?.[0] ? (
+                    {product.image ? (
                       <Image
-                        src={product.images[0]}
+                        src={product.image}
                         alt={product.name}
                         width={48}
                         height={48}
@@ -193,9 +194,28 @@ export default function SearchDropdown({
                 </Button>
               </div>
             </>
+          ) : query.length > 1 ? (
+            <div className="p-4 text-center">
+              <div className="text-gray-500 mb-2">
+                No products found for "{query}"
+              </div>
+              <Button
+                onClick={() => {
+                  setIsOpen(false);
+                  router.push(
+                    `/products?search=${encodeURIComponent(query)}&page=1`
+                  );
+                }}
+                variant="outline"
+                size="sm"
+                className="text-xs"
+              >
+                Search all products for "{query}"
+              </Button>
+            </div>
           ) : (
             <div className="p-4 text-center text-gray-500">
-              No products found for "{query}"
+              Type at least 2 characters to search
             </div>
           )}
         </div>

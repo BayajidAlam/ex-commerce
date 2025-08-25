@@ -101,6 +101,22 @@ router.post(
         expiresIn: "7d",
       });
 
+      // Set token as HTTP-only cookie for 7 days (matching existing auth system)
+      res.cookie("auth-token", token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      // Set client-accessible cookie for admin dashboard (matching existing auth system)
+      res.cookie("auth-token-client", token, {
+        httpOnly: false, // Allow client-side access
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "strict",
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
       res.json({
         message: "Login successful",
         token,
@@ -118,6 +134,29 @@ router.post(
     }
   }
 );
+
+// Logout
+router.post("/logout", (req, res) => {
+  try {
+    // Clear both auth cookies (matching existing auth system)
+    res.clearCookie("auth-token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.clearCookie("auth-token-client", {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+    });
+
+    res.json({ message: "Logout successful" });
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ error: "Logout failed" });
+  }
+});
 
 // Get current user
 router.get("/me", auth, async (req, res) => {
