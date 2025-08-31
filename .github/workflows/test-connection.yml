@@ -1,0 +1,34 @@
+name: Test VPS Connection
+
+on:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Test SSH Connection
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            echo "✅ SSH connection successful!"
+            echo "Server info:"
+            whoami
+            pwd
+            docker --version || echo "Docker not installed"
+            docker-compose --version || echo "Docker Compose not installed"
+            
+            if [ -d "/var/www/ex-commerce" ]; then
+              echo "✅ Project directory exists"
+              cd /var/www/ex-commerce
+              ls -la
+            else
+              echo "❌ Project directory not found"
+              echo "Run setup script first:"
+              echo "curl -fsSL https://raw.githubusercontent.com/BayajidAlam/ex-commerce/main/deployment/setup-vps.sh | bash"
+            fi
