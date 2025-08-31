@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Deploy to VPS via Docker
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -49,11 +46,13 @@ jobs:
               exit 1
             fi
             
-            # Copy environment file if not exists
+            # Check if .env file exists (should be created manually on VPS)
             if [ ! -f ".env" ]; then
-              echo "Creating .env file from template..."
+              echo "Warning: .env file not found"
+              echo "Creating from template, but you MUST configure it manually:"
               cp .env.docker .env
-              echo "Please update .env file with your settings"
+              echo "SSH to your VPS and run: nano /var/www/ex-commerce/.env"
+              echo "Update MongoDB password, JWT secret, and other sensitive data"
             fi
             
             # Check Docker installation
@@ -88,9 +87,9 @@ jobs:
             # Check if containers are running
             if docker compose ps 2>/dev/null | grep -q "Up" || docker-compose ps 2>/dev/null | grep -q "Up"; then
               echo "✅ Deployment completed successfully!"
+              echo "Make sure to configure .env file on VPS with secure values"
             else
               echo "❌ Some containers may not be running properly"
-              echo "Logs:"
-              docker compose logs --tail=50 2>/dev/null || docker-compose logs --tail=50 || echo "Could not get logs"
+              echo "Check if .env file is properly configured"
               exit 1
             fi
