@@ -100,15 +100,46 @@ async function ensureAdmin() {
 
 // Helper to build internal Mongo URI when not provided (Docker Compose default)
 function buildInternalMongoUri() {
-  // Use fixed credentials that match docker-compose.yml
+  // Start with no-auth connection for fresh MongoDB containers
+  return `mongodb://mongodb:27017/ex_commerce`;
+}
+
+// Alternative URI with auth for initialized containers
+function buildInternalMongoUriWithAuth() {
   return `mongodb://admin:securepassword123@mongodb:27017/ex_commerce?authSource=admin`;
 }
 
-// MongoDB connection
-mongoose
-  .connect(process.env.MONGODB_URI || buildInternalMongoUri())
-  .then(async () => {
+// MongoDB connection with fallback
+async function connectToMongoDB() {
+  const uriPrimary = process.env.MONGODB_URI || buildInternalMongoUri();
+
+  try {
+    await mongoose.connect(uriPrimary);
     console.log("MongoDB connected successfully");
+    return;
+  } catch (err) {
+    console.log("Primary connection failed, trying with auth...");
+
+    // If no custom URI provided and primary failed, try with auth
+    if (!process.env.MONGODB_URI) {
+      try {
+        await mongoose.connect(buildInternalMongoUriWithAuth());
+        console.log("MongoDB connected successfully (with auth)");
+        return;
+      } catch (authErr) {
+        console.error("MongoDB connection failed with auth:", authErr.message);
+        throw authErr;
+      }
+    }
+
+    console.error("MongoDB connection error:", err.message);
+    throw err;
+  }
+}
+
+// MongoDB connection with fallback
+connectToMongoDB()
+  .then(async () => {
     // Minimal diag: confirm admin env presence
     if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) {
       console.warn(
@@ -117,7 +148,10 @@ mongoose
     }
     await ensureAdmin();
   })
-  .catch((err) => console.error("MongoDB connection error:", err));
+  .catch((err) => {
+    console.error("Failed to connect to MongoDB:", err);
+    process.exit(1);
+  });
 
 // Routes
 app.use("/api/auth", authRoutes);

@@ -17,6 +17,8 @@ services:
       - ./backups:/backups
     networks:
       - ex-commerce-network
+    # Start without auth to allow connection, auth is handled by MONGO_INITDB vars
+    command: ["mongod", "--bind_ip_all"]
 
   # Backend API Service
   backend:
