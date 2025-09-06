@@ -100,11 +100,8 @@ async function ensureAdmin() {
 
 // Helper to build internal Mongo URI when not provided (Docker Compose default)
 function buildInternalMongoUri() {
-  const host = process.env.MONGO_HOST || "mongodb"; // service name in compose
-  const user = process.env.MONGO_ROOT_USERNAME || "admin";
-  const pass = process.env.MONGO_ROOT_PASSWORD || "securepassword123";
-  const db = process.env.MONGO_DB_NAME || "ex_commerce";
-  return `mongodb://${user}:${pass}@${host}:27017/${db}?authSource=admin`;
+  // Use fixed credentials that match docker-compose.yml
+  return `mongodb://admin:securepassword123@mongodb:27017/ex_commerce?authSource=admin`;
 }
 
 // MongoDB connection

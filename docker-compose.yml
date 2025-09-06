@@ -7,18 +7,16 @@ services:
     container_name: ex-commerce-mongodb
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USERNAME:-admin}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASSWORD:-securepassword123}
-      MONGO_INITDB_DATABASE: ${MONGO_DB_NAME:-ex_commerce}
-    # NO EXTERNAL PORTS - only accessible through backend
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: securepassword123
+      MONGO_INITDB_DATABASE: ex_commerce
     volumes:
-      # Persistent data storage
+      # Persistent data storage - survives container restarts and rebuilds
       - mongodb_data:/data/db
       - mongodb_config:/data/configdb
       - ./backups:/backups
     networks:
       - ex-commerce-network
-    command: mongod --auth --bind_ip_all
 
   # Backend API Service
   backend:
