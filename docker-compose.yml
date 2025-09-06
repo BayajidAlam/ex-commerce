@@ -6,10 +6,6 @@ services:
     image: mongo:7.0
     container_name: ex-commerce-mongodb
     restart: unless-stopped
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: securepassword123
-      MONGO_INITDB_DATABASE: ex_commerce
     volumes:
       # Persistent data storage - survives container restarts and rebuilds
       - mongodb_data:/data/db
@@ -17,8 +13,6 @@ services:
       - ./backups:/backups
     networks:
       - ex-commerce-network
-    # Start without auth to allow connection, auth is handled by MONGO_INITDB vars
-    command: ["mongod", "--bind_ip_all"]
 
   # Backend API Service
   backend:
