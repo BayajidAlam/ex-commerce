@@ -14,8 +14,9 @@ router.post(
     body("lastName").trim().notEmpty().withMessage("Last name is required"),
     body("email")
       .isEmail()
-      .normalizeEmail()
-      .withMessage("Valid email is required"),
+      .withMessage("Valid email is required")
+      .trim()
+      .toLowerCase(),
     body("phone").isMobilePhone().withMessage("Valid phone number is required"),
     body("password")
       .isLength({ min: 6 })
@@ -71,8 +72,9 @@ router.post(
   [
     body("email")
       .isEmail()
-      .normalizeEmail()
-      .withMessage("Valid email is required"),
+      .withMessage("Valid email is required")
+      .trim()
+      .toLowerCase(),
     body("password").notEmpty().withMessage("Password is required"),
   ],
   async (req, res) => {
@@ -225,8 +227,9 @@ router.post(
   [
     body("email")
       .isEmail()
-      .normalizeEmail()
-      .withMessage("Valid email is required"),
+      .withMessage("Valid email is required")
+      .trim()
+      .toLowerCase(),
   ],
   async (req, res) => {
     try {

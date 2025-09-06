@@ -7,6 +7,7 @@ import { ProductCard } from "@/components/ProductCard";
 import Categories from "@/components/UI/Home/Categories";
 import Link from "next/link";
 import Header from "@/components/header";
+import Footer from "@/components/footer";
 import { useCartStore } from "@/lib/store";
 import { toast } from "sonner";
 import LovedByYouSection from "@/components/LovedByYouSection";
@@ -114,7 +115,7 @@ export default function HomePage() {
         "Stylish and functional bags designed for modern, confident women",
       imgSrc: "/path-to-your-image1.jpg",
       buttonActive: true,
-      link: "/",
+      link: "/products?category=bag&page=1",
     },
     {
       title: "Jewelry",
@@ -122,7 +123,7 @@ export default function HomePage() {
         "Elegant jewelry pieces to elevate your every-day and special looks.",
       imgSrc: "/path-to-your-image2.jpg",
       buttonActive: false,
-      link: "/",
+      link: "/products?category=jewelry&page=1",
     },
     {
       title: "Sunglasses",
@@ -130,7 +131,7 @@ export default function HomePage() {
         "Designer-inspired sunglasses crafted for bold expression and flawless protection.",
       imgSrc: "/path-to-your-image3.jpg",
       buttonActive: false,
-      link: "/",
+      link: "/products?category=glass&page=1",
     },
     {
       title: "Watches",
@@ -138,7 +139,7 @@ export default function HomePage() {
         "Refined and reliable watches made to complement every graceful moment.",
       imgSrc: "/path-to-your-image4.jpg",
       buttonActive: false,
-      link: "/",
+      link: "/products?category=watch&page=1",
     },
   ];
 
@@ -250,95 +251,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-primary text-primary-foreground py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <div className="mb-4">
-                {siteSettings?.logoUrl ? (
-                  <img
-                    src={siteSettings.logoUrl}
-                    alt={siteSettings.siteName || "ARJO"}
-                    className="h-8 w-auto max-w-[120px] object-contain brightness-0 invert"
-                  />
-                ) : (
-                  <h3 className="text-xl font-bold">
-                    {siteSettings?.siteName || "ARJO"}
-                  </h3>
-                )}
-              </div>
-              <p className="text-primary-foreground/80 text-sm">
-                {siteSettings?.description ||
-                  "Premium quality men's fashion and traditional wear."}
-              </p>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-primary-foreground/80">
-                <li>
-                  <a href="#" className="hover:text-primary-foreground">
-                    Home
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-primary-foreground">
-                    Products
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-primary-foreground">
-                    About Us
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-primary-foreground">
-                    Contact
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Categories</h4>
-              <ul className="space-y-2 text-sm text-primary-foreground/80">
-                <li>
-                  <a href="#" className="hover:text-primary-foreground">
-                    Casual Shirts
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-primary-foreground">
-                    Formal Wear
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-primary-foreground">
-                    Traditional
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-primary-foreground">
-                    Seasonal
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-semibold mb-4">Contact Info</h4>
-              <div className="space-y-2 text-sm text-primary-foreground/80">
-                <p>Phone: {siteSettings?.contactPhone || "+880 123 456 789"}</p>
-                <p>Email: {siteSettings?.contactEmail || "info@arjo.com"}</p>
-                <p>Address: {siteSettings?.address || "Dhaka, Bangladesh"}</p>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm text-primary-foreground/80">
-            <p>
-              &copy; 2024 {siteSettings?.siteName || "ARJO"}. All rights
-              reserved.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

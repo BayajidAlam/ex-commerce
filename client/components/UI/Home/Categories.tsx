@@ -58,6 +58,7 @@ const products = {
 
 export default function Categories() {
   const { addItem } = useCartStore();
+  const [tab, setTab] = React.useState<string>("bags");
 
   const handleAddToCart = (product: any) => {
     const cartItem = {
@@ -82,7 +83,7 @@ export default function Categories() {
 
   return (
     <div className="text-center py-32">
-      <Tabs defaultValue="bags" className="w-full">
+      <Tabs value={tab} onValueChange={setTab} className="w-full">
         {/* Category Selector */}
         <TabsList className="flex justify-center items-center gap-10 bg-transparent p-0">
           {[
@@ -90,23 +91,46 @@ export default function Categories() {
             { value: "jewelry", img: categoryImage2, label: "Jewelry" },
             { value: "sunglasses", img: categoryImage3, label: "Sunglasses" },
             { value: "watches", img: categoryImage4, label: "Watches" },
-          ].map((cat) => (
-            <TabsTrigger
-              key={cat.value}
-              value={cat.value}
-              className="flex items-center justify-center w-32 h-32 rounded-full transition-all data-[state=active]:bg-pink-100 data-[state=active]:text-pink-600"
-            >
-              <div className="w-20 h-20 rounded-full overflow-hidden">
-                <Image
-                  src={cat.img}
-                  alt={cat.label}
-                  width={80}
-                  height={80}
-                  className="object-cover w-full h-full"
-                />
-              </div>
-            </TabsTrigger>
-          ))}
+          ].map((cat) => {
+            const active = tab === cat.value;
+            return (
+              <TabsTrigger
+                key={cat.value}
+                value={cat.value}
+                className="group flex flex-col items-center justify-center gap-2 rounded-full transition-all focus:outline-none"
+              >
+                <div
+                  className={
+                    "w-16 h-16 rounded-full flex items-center justify-center transition-colors " +
+                    (active ? "bg-primary" : "bg-transparent")
+                  }
+                >
+                  <div className="w-20 h-20 flex items-center justify-center">
+                    <Image
+                      src={cat.img}
+                      alt={cat.label}
+                      width={80}
+                      height={80}
+                      className={
+                        "object-contain w-full h-full " +
+                        (active
+                          ? "filter brightness-0 invert"
+                          : "[filter:invert(14%)_sepia(96%)_saturate(904%)_hue-rotate(338deg)_brightness(84%)_contrast(104%)]")
+                      }
+                      style={
+                        active
+                          ? { clipPath: "inset(12% round 9999px)" }
+                          : undefined
+                      }
+                    />
+                  </div>
+                </div>
+                <span className="text-sm font-medium text-primary">
+                  {cat.label}
+                </span>
+              </TabsTrigger>
+            );
+          })}
         </TabsList>
 
         {/* Products Section */}

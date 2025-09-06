@@ -21,6 +21,9 @@ const adminOrderRoutes = require("./routes/admin/orders");
 const adminUserRoutes = require("./routes/admin/users");
 const adminSiteSettingsRoutes = require("./routes/admin/siteSettings");
 
+// Models
+const User = require("./models/User");
+
 const app = express();
 
 // Security middleware
@@ -37,19 +40,71 @@ const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
 });
-app.use("/api/", limiter);
+if (process.env.NODE_ENV === "production") {
+  app.use("/api/", limiter);
+} else {
+  console.log("Rate limiter disabled in non-production");
+}
 
 // Body parsing middleware
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Ensure admin user exists on every restart
+async function ensureAdmin() {
+  try {
+    const email = process.env.ADMIN_EMAIL;
+    const password = process.env.ADMIN_PASSWORD;
+    const forceReset =
+      String(process.env.ADMIN_FORCE_RESET || "false").toLowerCase() === "true";
+
+    if (!email || !password) {
+      console.warn(
+        "ADMIN_EMAIL or ADMIN_PASSWORD not set; skipping admin ensure."
+      );
+      return;
+    }
+
+    let user = await User.findOne({ email });
+
+    if (user) {
+      if (forceReset) {
+        user.password = password; // hashed by pre-save hook
+        user.isActive = true;
+        user.role = "admin";
+        await user.save();
+        console.log("✅ Admin password reset:", email);
+      } else {
+        console.log("Admin user exists:", email);
+      }
+      return;
+    }
+
+    user = new User({
+      firstName: "Admin",
+      lastName: "User",
+      email,
+      phone: "+1234567890",
+      password,
+      role: "admin",
+      isActive: true,
+    });
+
+    await user.save();
+    console.log("✅ Admin user created:", email);
+  } catch (err) {
+    console.error("❌ Failed to ensure admin user:", err);
+  }
+}
+
 // MongoDB connection
 mongoose
-  .connect(
-    process.env.MONGODB_URI || "mongodb://localhost:27017/aluna-ecommerce"
-  )
-  .then(() => console.log("MongoDB connected successfully"))
+  .connect(process.env.MONGODB_URI)
+  .then(async () => {
+    console.log("MongoDB connected successfully");
+    await ensureAdmin();
+  })
   .catch((err) => console.error("MongoDB connection error:", err));
 
 // Routes
