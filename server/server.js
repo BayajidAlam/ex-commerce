@@ -112,6 +112,12 @@ mongoose
   .connect(process.env.MONGODB_URI || buildInternalMongoUri())
   .then(async () => {
     console.log("MongoDB connected successfully");
+    // Minimal diag: confirm admin env presence
+    if (!process.env.ADMIN_EMAIL || !process.env.ADMIN_PASSWORD) {
+      console.warn(
+        "Admin env missing inside container. Ensure ADMIN_EMAIL and ADMIN_PASSWORD are passed at runtime."
+      );
+    }
     await ensureAdmin();
   })
   .catch((err) => console.error("MongoDB connection error:", err));
