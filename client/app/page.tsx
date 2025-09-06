@@ -250,7 +250,7 @@ export default function HomePage() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
+      <footer className="bg-primary text-primary-foreground py-12">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
@@ -267,31 +267,31 @@ export default function HomePage() {
                   </h3>
                 )}
               </div>
-              <p className="text-gray-400 text-sm">
+              <p className="text-primary-foreground/80 text-sm">
                 {siteSettings?.description ||
                   "Premium quality men's fashion and traditional wear."}
               </p>
             </div>
             <div>
               <h4 className="font-semibold mb-4">Quick Links</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <ul className="space-y-2 text-sm text-primary-foreground/80">
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-primary-foreground">
                     Home
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-primary-foreground">
                     Products
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-primary-foreground">
                     About Us
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-primary-foreground">
                     Contact
                   </a>
                 </li>
@@ -299,24 +299,24 @@ export default function HomePage() {
             </div>
             <div>
               <h4 className="font-semibold mb-4">Categories</h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <ul className="space-y-2 text-sm text-primary-foreground/80">
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-primary-foreground">
                     Casual Shirts
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-primary-foreground">
                     Formal Wear
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-primary-foreground">
                     Traditional
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white">
+                  <a href="#" className="hover:text-primary-foreground">
                     Seasonal
                   </a>
                 </li>
@@ -324,14 +324,14 @@ export default function HomePage() {
             </div>
             <div>
               <h4 className="font-semibold mb-4">Contact Info</h4>
-              <div className="space-y-2 text-sm text-gray-400">
+              <div className="space-y-2 text-sm text-primary-foreground/80">
                 <p>Phone: {siteSettings?.contactPhone || "+880 123 456 789"}</p>
                 <p>Email: {siteSettings?.contactEmail || "info@arjo.com"}</p>
                 <p>Address: {siteSettings?.address || "Dhaka, Bangladesh"}</p>
               </div>
             </div>
           </div>
-          <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
+          <div className="border-t border-primary-foreground/20 mt-8 pt-8 text-center text-sm text-primary-foreground/80">
             <p>
               &copy; 2024 {siteSettings?.siteName || "ARJO"}. All rights
               reserved.

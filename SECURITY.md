@@ -3,16 +3,19 @@
 ## Environment Variables Security
 
 ### ✅ Safe Files (Committed to Git)
+
 - `.env.docker` - Template with placeholder values only
 - `docker-compose.yml` - Uses environment variables, no hardcoded secrets
 
 ### ❌ Never Commit These Files
+
 - `.env` - Contains real production secrets
 - Any file with actual passwords, API keys, or JWT secrets
 
 ## VPS Security Setup
 
 ### 1. Manual .env Configuration on VPS
+
 ```bash
 # SSH to your VPS
 ssh user@your-vps-ip
@@ -25,6 +28,7 @@ nano .env
 ```
 
 ### 2. Required Environment Variables
+
 ```bash
 # MongoDB - Use strong passwords
 MONGO_ROOT_USERNAME=admin
@@ -44,6 +48,7 @@ NEXT_PUBLIC_API_URL=https://yourdomain.com
 ```
 
 ### 3. Generate Secure Secrets
+
 ```bash
 # Generate secure MongoDB password
 openssl rand -base64 32
@@ -55,6 +60,7 @@ openssl rand -base64 64
 ## GitHub Actions Security
 
 ### Required Repository Secrets
+
 1. Go to GitHub Repository → Settings → Secrets and variables → Actions
 2. Add these secrets:
    - `VPS_HOST` - Your VPS IP address
@@ -63,6 +69,7 @@ openssl rand -base64 64
    - `VPS_PORT` - SSH port (usually 22)
 
 ### What's NOT in GitHub Actions
+
 - No environment variables exposed in workflow
 - No database passwords in logs
 - No API keys or JWT secrets
@@ -70,12 +77,14 @@ openssl rand -base64 64
 ## MongoDB Security
 
 ### Internal Access Only
+
 - MongoDB runs inside Docker network
 - No external ports exposed (port 27017 not accessible from outside)
 - Only backend container can access MongoDB
 - Authentication required with username/password
 
 ### Data Persistence
+
 - MongoDB data stored in Docker volume `mongodb_data`
 - Data survives container restarts and updates
 - Located at `/var/lib/docker/volumes/ex-commerce_mongodb_data`
@@ -91,6 +100,7 @@ openssl rand -base64 64
 7. **Regularly backup MongoDB data**
 
 ## Backup Security
+
 ```bash
 # Create encrypted backup
 docker exec ex-commerce-mongodb-1 mongodump --authenticationDatabase admin \

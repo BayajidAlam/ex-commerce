@@ -6,7 +6,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Test SSH Connection
         uses: appleboy/ssh-action@v1.0.3
@@ -22,7 +22,7 @@ jobs:
             pwd
             docker --version || echo "Docker not installed"
             docker-compose --version || echo "Docker Compose not installed"
-            
+
             if [ -d "/var/www/ex-commerce" ]; then
               echo "✅ Project directory exists"
               cd /var/www/ex-commerce

@@ -299,6 +299,28 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
                   </>
                 )}
               </div>
+
+              {/* Primary CTA buttons under price */}
+              <div className="flex gap-3 mb-6">
+                <Button
+                  size="lg"
+                  className="bg-primary text-primary-foreground hover:opacity-90"
+                  onClick={handleOrderNow}
+                  disabled={isOrdering}
+                >
+                  {isOrdering ? "Processing..." : "Buy Now"}
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={handleAddToCart}
+                  disabled={isAddingToCart}
+                >
+                  <ShoppingCart className="mr-2 h-4 w-4" />
+                  {isAddingToCart ? "Adding..." : "Add to Cart"}
+                </Button>
+              </div>
+
               <p className="text-gray-600 mb-4">
                 Material: {product.material || "Premium Quality"}
               </p>
@@ -610,6 +632,28 @@ export function ProductDetailsClient({ product }: ProductDetailsClientProps) {
               />
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* Sticky mobile CTA bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80 border-t p-3 md:hidden">
+        <div className="container flex gap-3">
+          <Button
+            className="flex-1 bg-primary text-primary-foreground hover:opacity-90"
+            onClick={handleOrderNow}
+            disabled={isOrdering}
+          >
+            {isOrdering ? "Processing..." : "Buy Now"}
+          </Button>
+          <Button
+            className="flex-1"
+            variant="outline"
+            onClick={handleAddToCart}
+            disabled={isAddingToCart}
+          >
+            <ShoppingCart className="mr-2 h-4 w-4" />
+            {isAddingToCart ? "Adding..." : "Add to Cart"}
+          </Button>
         </div>
       </div>
     </div>
