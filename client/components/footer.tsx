@@ -66,7 +66,10 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/products" className="hover:text-primary-foreground uppercase">
+                <a
+                  href="/products"
+                  className="hover:text-primary-foreground uppercase"
+                >
                   Products
                 </a>
               </li>
