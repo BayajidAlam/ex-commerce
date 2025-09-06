@@ -98,72 +98,12 @@ async function ensureAdmin() {
   }
 }
 
-// Ensure a default (non-admin) user exists
-function derivePlusEmail(email, tag = "user") {
-  try {
-    const [local, domain] = String(email).split("@");
-    if (!local || !domain) return null;
-    return `${local}+${tag}@${domain}`;
-  } catch {
-    return null;
-  }
-}
-
-async function ensureDefaultUser() {
-  try {
-    const configuredEmail = process.env.DEFAULT_USER_EMAIL;
-    const configuredPassword = process.env.DEFAULT_USER_PASSWORD;
-    const fallbackEmail = derivePlusEmail(process.env.ADMIN_EMAIL, "user");
-    const email = configuredEmail || fallbackEmail;
-    const password = configuredPassword || process.env.ADMIN_PASSWORD;
-    const forceReset =
-      String(process.env.DEFAULT_USER_FORCE_RESET || "false").toLowerCase() ===
-      "true";
-
-    if (!email || !password) {
-      console.log("Default user not configured; skipping.");
-      return;
-    }
-
-    let user = await User.findOne({ email });
-
-    if (user) {
-      if (forceReset) {
-        user.password = password; // hashed by pre-save hook
-        user.isActive = true;
-        user.role = "user";
-        await user.save();
-        console.log("✅ Default user password reset:", email);
-      } else {
-        console.log("Default user exists:", email);
-      }
-      return;
-    }
-
-    user = new User({
-      firstName: "Default",
-      lastName: "User",
-      email,
-      phone: "+1234567891",
-      password,
-      role: "user",
-      isActive: true,
-    });
-
-    await user.save();
-    console.log("✅ Default user created:", email);
-  } catch (err) {
-    console.error("❌ Failed to ensure default user:", err);
-  }
-}
-
 // MongoDB connection
 mongoose
   .connect(process.env.MONGODB_URI)
   .then(async () => {
     console.log("MongoDB connected successfully");
     await ensureAdmin();
-    await ensureDefaultUser();
   })
   .catch((err) => console.error("MongoDB connection error:", err));
 
