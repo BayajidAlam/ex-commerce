@@ -98,9 +98,18 @@ async function ensureAdmin() {
   }
 }
 
+// Helper to build internal Mongo URI when not provided (Docker Compose default)
+function buildInternalMongoUri() {
+  const host = process.env.MONGO_HOST || "mongodb"; // service name in compose
+  const user = process.env.MONGO_ROOT_USERNAME || "admin";
+  const pass = process.env.MONGO_ROOT_PASSWORD || "securepassword123";
+  const db = process.env.MONGO_DB_NAME || "ex_commerce";
+  return `mongodb://${user}:${pass}@${host}:27017/${db}?authSource=admin`;
+}
+
 // MongoDB connection
 mongoose
-  .connect(process.env.MONGODB_URI)
+  .connect(process.env.MONGODB_URI || buildInternalMongoUri())
   .then(async () => {
     console.log("MongoDB connected successfully");
     await ensureAdmin();
